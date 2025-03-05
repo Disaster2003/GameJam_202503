@@ -12,6 +12,7 @@ public class SetNextScene : MonoBehaviour
     {
         GetComponent<Button>().onClick.AddListener(() =>
         {
+            Time.timeScale = 1f;
             GameManager.GetInstance.ChangeScene = state_scene;
         });
     }
