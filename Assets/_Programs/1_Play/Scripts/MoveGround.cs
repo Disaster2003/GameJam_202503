@@ -39,6 +39,9 @@ public class MoveGround : MonoBehaviour
 
     Vector3 startPosition;
 
+    BoxCollider2D collision2D;
+    SpriteRenderer spriteRenderer;
+
     /// <summary>
     /// タイマー
     /// </summary>
@@ -63,6 +66,8 @@ public class MoveGround : MonoBehaviour
         //index = 0;
         startPosition = transform.position;
         Debug.Log(2 * ((floor - 1) * widthY));
+        collision2D = GetComponent<BoxCollider2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     // Update is called once per frame
@@ -73,7 +78,8 @@ public class MoveGround : MonoBehaviour
         if (character.transform.position.y > widthY + (2 * (floor * widthY))
            || character.transform.position.y < (2 * ((floor - 1) * widthY)) + widthY)
         {
-            gameObject.SetActive(true);
+            collision2D.enabled = true;
+            spriteRenderer.enabled = true;
         }
     }
 
@@ -99,7 +105,8 @@ public class MoveGround : MonoBehaviour
                 {
                     if (time < 0)
                     {
-                        gameObject.SetActive(false);
+                        collision2D.enabled = false;
+                        spriteRenderer.enabled = false;
                         isTach = false;
                     }
                 }
