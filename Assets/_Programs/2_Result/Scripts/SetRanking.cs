@@ -80,7 +80,7 @@ public class SetRanking : MonoBehaviour
         int newRank = 0; // まず今回のスコアを0位と仮定する
         for (int idx = 5; idx > 0; idx--)
         {
-            if (ranks[idx] > score)
+            if (ranks[idx] > score || ranks[idx] == 0f)
             {
                 // 新しいランクとして判定する
                 newRank = idx;
@@ -110,7 +110,13 @@ public class SetRanking : MonoBehaviour
     {
         for(int idx = 0; idx < 5; idx++)
         {
-            txtRanks[idx].text = ranks[idx + 1].ToString("f2");
+            if (ranks[idx] == 0f)
+            {
+                txtRanks[idx].text = "___.__";
+                continue;
+            }
+
+            txtRanks[idx].text = ranks[idx + 1].ToString("f2"); 
         }
     }
 }

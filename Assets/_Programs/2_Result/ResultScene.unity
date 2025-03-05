@@ -921,7 +921,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9fdfd286973fc049bfe690f87a38884, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  score: -1
+  score: 0
   txtPlayerScore: {fileID: 2106137850}
   txtRanks:
   - {fileID: 1936158023}
