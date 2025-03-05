@@ -130,7 +130,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      asiba_kari_0: -8724882524053930239
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

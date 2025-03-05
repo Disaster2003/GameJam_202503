@@ -69,7 +69,12 @@ public class MoveGround : MonoBehaviour
     void Update()
     {
         time -= Time.deltaTime;
-        SetObstacles();      
+        SetObstacles();
+        if (character.transform.position.y > widthY + (2 * (floor * widthY))
+           || character.transform.position.y < (2 * ((floor - 1) * widthY)) + widthY)
+        {
+            gameObject.SetActive(true);
+        }
     }
 
     
@@ -97,11 +102,6 @@ public class MoveGround : MonoBehaviour
                         gameObject.SetActive(false);
                         isTach = false;
                     }
-                }
-                if (character.transform.position.x > widthY + (2 * (floor * widthY))
-                    || character.transform.position.x < (2 * ((floor - 1) * widthY)) + widthY)
-                {
-                    gameObject.SetActive(true);
                 }
                 break;
         }
