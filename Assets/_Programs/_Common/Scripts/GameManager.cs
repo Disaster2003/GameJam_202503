@@ -22,7 +22,7 @@ public class GameManager : SingletonSample<GameManager>
         DontDestroyOnLoad(gameObject);
 
         // 状態の初期化
-        state_scene = STATE_SCENE.TITLE;
+        state_scene = (STATE_SCENE)SceneManager.GetActiveScene().buildIndex;
 
         // コンポーネントの取得
         audioSource = GetComponent<AudioSource>();
