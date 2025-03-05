@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 using static UnityEngine.GraphicsBuffer;
 
 /// <summary>
-/// áŠQ•¨‚Ìí—Ş
+/// éšœå®³ç‰©ã®ç¨®é¡
 /// </summary>
 enum Obstacles
 {
@@ -28,26 +28,26 @@ public class MoveGround : MonoBehaviour
         rotate,
     }
 
-    [SerializeField, Header("áŠQ•¨‚Ìí—Ş")] private Obstacles obstacles1;
-    [SerializeField, Header("áŠQ•¨‚Ìí—Ş")] private Obstacles obstacles2;
+    [SerializeField, Header("éšœå®³ç‰©ã®ç¨®é¡")] private Obstacles obstacles1;
+    [SerializeField, Header("éšœå®³ç‰©ã®ç¨®é¡")] private Obstacles obstacles2;
 
-    [SerializeField, Header("ˆÚ“®‚Ì‘¬‚³")] private float moveSpeed;
-    [SerializeField, Header("‰Â“®ˆæ@‰¡(LateralMovement)")] private float lateraRange;
-    [SerializeField, Header("‰Â“®ˆæ@c(VerticalMovement)")] private float verticalRange;
-    [SerializeField, Header("‰ñ“]‚Ì‘¬‚³")] private float rotateSpeed;
-    [SerializeField, Header("Š’è‚ÌÀ•W")] private Transform[] targets;
+    [SerializeField, Header("ç§»å‹•ã®é€Ÿã•")] private float moveSpeed;
+    [SerializeField, Header("å¯å‹•åŸŸã€€æ¨ª(LateralMovement)")] private float lateraRange;
+    [SerializeField, Header("å¯å‹•åŸŸã€€ç¸¦(VerticalMovement)")] private float verticalRange;
+    [SerializeField, Header("å›è»¢ã®é€Ÿã•")] private float rotateSpeed;
+    [SerializeField, Header("æ‰€å®šã®åº§æ¨™")] private Transform[] targets;
 
-    private int currentTargetIndex = 0; // Œ»İ‚Ìƒ^[ƒQƒbƒgƒCƒ“ƒfƒbƒNƒX
+    private int currentTargetIndex = 0; // ç¾åœ¨ã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 
     Vector3 startPosition;
 
     ///// <summary>
-    ///// ƒ^ƒCƒ}[
+    ///// ã‚¿ã‚¤ãƒãƒ¼
     ///// </summary>
     //float time;
 
     ///// <summary>
-    ///// ÀŒø’l
+    ///// å®ŸåŠ¹å€¤
     ///// </summary>
     //float index;
 
@@ -103,7 +103,7 @@ public class MoveGround : MonoBehaviour
     }
 
     /// <summary>
-    /// ‰¡‚ÌˆÚ“®
+    /// æ¨ªã®ç§»å‹•
     /// </summary>
     void LateralMove()
     {
@@ -112,7 +112,7 @@ public class MoveGround : MonoBehaviour
     }
 
     /// <summary>
-    /// c‚ÌˆÚ“®
+    /// ç¸¦ã®ç§»å‹•
     /// </summary>
     void VerticalMove()
     {
@@ -121,26 +121,26 @@ public class MoveGround : MonoBehaviour
     }
 
     /// <summary>
-    /// Š’è‚ÌˆÊ’u
+    /// æ‰€å®šã®ä½ç½®
     /// </summary>
     void TargetMove()
     {
         if (targets.Length == 0) return;
 
-        // Œ»İ‚Ìƒ^[ƒQƒbƒgˆÊ’u‚ÉŒü‚©‚Á‚ÄˆÚ“®
+        // ç¾åœ¨ã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆä½ç½®ã«å‘ã‹ã£ã¦ç§»å‹•
         Vector3 targetPosition = (currentTargetIndex < targets.Length) ? targets[currentTargetIndex].position : startPosition;
         transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
 
-        // ƒ^[ƒQƒbƒg‚Ü‚½‚Í‰ŠúˆÊ’u‚É‹ß‚Ã‚¢‚½‚çŸ‚Ìƒ^[ƒQƒbƒg‚Ö
+        // ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¾ãŸã¯åˆæœŸä½ç½®ã«è¿‘ã¥ã„ãŸã‚‰æ¬¡ã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¸
         if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
         {
             if (currentTargetIndex < targets.Length)
             {
-                currentTargetIndex++; // Ÿ‚Ìƒ^[ƒQƒbƒg‚Ö
+                currentTargetIndex++; // æ¬¡ã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¸
             }
             else
             {
-                currentTargetIndex = 0; // ‚·‚×‚Ä‚Ìƒ^[ƒQƒbƒg‚ğ‰ñ‚Á‚½‚ç‰ŠúˆÊ’u‚É–ß‚é
+                currentTargetIndex = 0; // ã™ã¹ã¦ã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’å›ã£ãŸã‚‰åˆæœŸä½ç½®ã«æˆ»ã‚‹
             }
         }
     }
