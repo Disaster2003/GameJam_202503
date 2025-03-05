@@ -5,20 +5,12 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using static UnityEngine.GraphicsBuffer;
 
-/// <summary>
-/// 障害物の種類
-/// </summary>
-enum Obstacles
-{
-    normal,
-    LateralMovement,
-    VerticalMovement,
-    rotate,
-}
-
 
 public class MoveGround : MonoBehaviour
 {
+    /// <summary>
+    /// 足場のタイプ
+    /// </summary>
     enum Obstacles
     {
         normal,
@@ -26,7 +18,12 @@ public class MoveGround : MonoBehaviour
         VerticalMovement,
         target,
         rotate,
+        disappear
     }
+
+    [SerializeField, Header("キャラクターのポジション")] private GameObject character;
+    [SerializeField, Header("カメラの中央からの縦幅半分")] private float widthY;
+    [SerializeField, Header("階層")] private float floor;
 
     [SerializeField, Header("障害物の種類")] private Obstacles obstacles1;
     [SerializeField, Header("障害物の種類")] private Obstacles obstacles2;
@@ -35,16 +32,23 @@ public class MoveGround : MonoBehaviour
     [SerializeField, Header("可動域　横(LateralMovement)")] private float lateraRange;
     [SerializeField, Header("可動域　縦(VerticalMovement)")] private float verticalRange;
     [SerializeField, Header("回転の速さ")] private float rotateSpeed;
+    [SerializeField, Header("足場の消える時間")] private float timer;
     [SerializeField, Header("所定の座標")] private Transform[] targets;
 
     private int currentTargetIndex = 0; // 現在のターゲットインデックス
 
     Vector3 startPosition;
 
-    ///// <summary>
-    ///// タイマー
-    ///// </summary>
-    //float time;
+    /// <summary>
+    /// タイマー
+    /// </summary>
+    float time;
+
+
+    /// <summary>
+    /// 消えるフラグ
+    /// </summary>
+    private bool isTach;
 
     ///// <summary>
     ///// 実効値
@@ -54,16 +58,18 @@ public class MoveGround : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //time = 0;
+        time = 0;
+        isTach = false;
         //index = 0;
         startPosition = transform.position;
+        Debug.Log(2 * ((floor - 1) * widthY));
     }
 
     // Update is called once per frame
     void Update()
     {
-        //time -= Time.deltaTime;
-        SetObstacles();
+        time -= Time.deltaTime;
+        SetObstacles();      
     }
 
     
@@ -83,6 +89,21 @@ public class MoveGround : MonoBehaviour
             case Obstacles.rotate:
                 RotateMove();
                 break;
+            case Obstacles.disappear:
+                if (isTach)
+                {
+                    if (time < 0)
+                    {
+                        gameObject.SetActive(false);
+                        isTach = false;
+                    }
+                }
+                if (character.transform.position.x > widthY + (2 * (floor * widthY))
+                    || character.transform.position.x < (2 * ((floor - 1) * widthY)) + widthY)
+                {
+                    gameObject.SetActive(true);
+                }
+                break;
         }
 
         switch (obstacles2)
@@ -98,6 +119,16 @@ public class MoveGround : MonoBehaviour
                 break;
             case Obstacles.rotate:
                 RotateMove();
+                break;
+            case Obstacles.disappear:
+                if (isTach)
+                {
+                    if (time < 0)
+                    {
+                        gameObject.SetActive(false);
+                        isTach =false;
+                    }
+                }
                 break;
         }
     }
@@ -148,5 +179,12 @@ public class MoveGround : MonoBehaviour
     void RotateMove()
     {
         transform.Rotate(Vector3.forward * -rotateSpeed * Time.deltaTime);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log("aa");
+        time = timer;
+        isTach = true;
     }
 }
