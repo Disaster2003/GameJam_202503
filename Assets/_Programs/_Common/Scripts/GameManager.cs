@@ -54,6 +54,7 @@ public class GameManager : SingletonSample<GameManager>
     {
         set
         {
+            Time.timeScale = 1f;
             state_scene = value;
             SceneManager.LoadSceneAsync((int)state_scene);
         }
