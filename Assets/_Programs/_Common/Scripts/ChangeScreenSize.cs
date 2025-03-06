@@ -27,11 +27,8 @@ public class ChangeScreenSize : MonoBehaviour
 
         NullCheck();
 
-        // フルスクリーン化
-        Screen.fullScreen = true;
-
         // テキストの初期化
-        txtScreenSize.text = "フルスクリーン";
+        txtScreenSize.text = "-";
 
         // 状態の初期化
         state_screen = STATE_SCREEN.FULL;
@@ -94,16 +91,14 @@ public class ChangeScreenSize : MonoBehaviour
     {
         if (screenWidth[(int)state_screen] == 0)
         {
-            // フルスクリーン
+            // フルスクリーン化
             Screen.fullScreen = true;
-            txtScreenSize.text = "フルスクリーン";
+            txtScreenSize.text = "Full Screen";
+            return;
         }
-        else
-        {
-            // フルスクリーン以外
-            Screen.fullScreen = false;
-            txtScreenSize.text = $"{screenWidth[(int)state_screen]} * {screenHeight[(int)state_screen]}";
-            Screen.SetResolution(screenWidth[(int)state_screen], screenHeight[(int)state_screen], Screen.fullScreen);
-        }
+
+        // フルスクリーン以外
+        txtScreenSize.text = $"{screenWidth[(int)state_screen]} * {screenHeight[(int)state_screen]}";
+        Screen.SetResolution(screenWidth[(int)state_screen], screenHeight[(int)state_screen], false); //<- falseに設定しないと解像度変更不可
     }
 }
