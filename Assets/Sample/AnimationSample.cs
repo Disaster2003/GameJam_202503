@@ -29,7 +29,7 @@ public class AnimationSample : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        Animation(spritesSample);
     }
 
     /// <summary>
