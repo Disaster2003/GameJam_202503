@@ -14,7 +14,6 @@ public class StartPos : MonoBehaviour
 
     public Vector3 GetStartPos()
     {
-        Debug.Log(transform.position);
         return transform.position;
     }
 }
