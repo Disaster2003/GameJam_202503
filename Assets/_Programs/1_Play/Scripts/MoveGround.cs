@@ -26,10 +26,12 @@ public class MoveGround : MonoBehaviour
         Exit_disappear,
         Exit_disappear_Cnt,
         Attack,
-        Blinking
+        Blinking,
+        Penetration,
     }
 
     [SerializeField, Header("プレイヤーのポジション")] private GameObject player;
+    [SerializeField, Header("オブジェクトの縦幅")] private float objectWidth;
     [SerializeField, Header("カメラの中央からの縦幅半分")] private float widthY;
     [SerializeField, Header("階層")] private float floor;
 
@@ -91,6 +93,11 @@ public class MoveGround : MonoBehaviour
     private bool isTach;
 
     /// <summary>
+    /// 貫通フラグ
+    /// </summary>
+    private bool isPenetration;
+
+    /// <summary>
     /// 実効値
     /// </summary>
     private float index;
@@ -103,6 +110,7 @@ public class MoveGround : MonoBehaviour
         isExit = false;
         isTach = false;
         isDiscover = false;
+        isPenetration = false;
         index = 0;
         startPosition = transform.position;
         moveDirection = new Vector3(-1, 0, 0);
@@ -181,6 +189,9 @@ public class MoveGround : MonoBehaviour
                 break;
             case Obstacles.Blinking:
                 BlinkingMove();
+                break;
+            case Obstacles.Penetration:
+                PenetrationMove();
                 break;
         }
     }
@@ -296,6 +307,29 @@ public class MoveGround : MonoBehaviour
             }
             isDiscover = !isDiscover;
             time = interval;
+        }
+    }
+    private void PenetrationMove()
+    {
+        float objW = gameObject.GetComponent<BoxCollider2D>().size.y - gameObject.GetComponent<SpriteRenderer>().bounds.size.y / 2;
+        float playerWidth = player.GetComponent<PolygonCollider2D>().bounds.size.y / 2;
+        if (transform.position.y <= player.transform.position.y - playerWidth + objW)
+        {
+            isPenetration = true;
+        }
+        else if(transform.position.y >= player.transform.position.y)
+        {
+            isPenetration = false;
+        }
+
+
+        if(isPenetration)
+        {
+            collision2D.enabled = true;
+        }
+        else
+        {
+            collision2D.enabled= false;
         }
     }
 
