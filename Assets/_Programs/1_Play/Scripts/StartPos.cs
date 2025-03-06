@@ -6,9 +6,17 @@ public class StartPos : MonoBehaviour
 {
     [SerializeField] private GameObject player;
 
+    private Vector3 startPosition;
+
     void Start()
     {
         //オブジェクトの位置をプレイヤーの開始地点に設定
-        player.transform.position = transform.position;
+        startPosition = transform.position;
+        player.transform.position = startPosition;
+    }
+
+    public Vector3 GetStartPos()
+    {
+        return startPosition;
     }
 }

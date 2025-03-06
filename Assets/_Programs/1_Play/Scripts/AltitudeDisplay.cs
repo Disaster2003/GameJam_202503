@@ -6,21 +6,22 @@ using UnityEngine;
 public class AltitudeDisplay : MonoBehaviour
 {
     [SerializeField] private Transform player;
+    [SerializeField] private StartPos startPos;
     [Header("y座標が1増えるごとに何mにするか")]
     [SerializeField] private int times = 1;
     public TextMeshProUGUI altitudeText;
-    float startY;
+    private Vector3 startPosition;
 
     void Start()
     {
-        startY = player.position.y; //スタート時のY座標を記録
+        startPosition = startPos.GetStartPos(); //スタート時の座標を記録
     }
 
     void Update()
     {
         if(player != null)
         {
-            int altitude = Mathf.FloorToInt(player.position.y - startY)*times; //プレイヤーのY座標を整数に変換
+            int altitude = Mathf.FloorToInt((player.position.y - startPosition.y)*times); //プレイヤーのY座標を整数に変換
             altitudeText.text = "標高:" + altitude + "m";
         }
     }
