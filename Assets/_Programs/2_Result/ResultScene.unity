@@ -922,6 +922,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   score: 0
+  isRemove: 0
   txtPlayerScore: {fileID: 2106137850}
   txtRanks:
   - {fileID: 1936158023}

@@ -6,6 +6,7 @@ using UnityEngine;
 public class SetRanking : MonoBehaviour
 {
     [SerializeField, Header("デバッグ用")] private float score;
+    [SerializeField, Header("デバッグ用")] private bool isRemove;
     [SerializeField] TextMeshProUGUI txtPlayerScore;
     [SerializeField] TextMeshProUGUI[] txtRanks = new TextMeshProUGUI[5];
     private float[] ranks = new float[6];
@@ -14,8 +15,7 @@ public class SetRanking : MonoBehaviour
     void Start()
     {
         // スコアの初期化
-        score = score;
-        txtPlayerScore.text = score.ToString("f2");
+        txtPlayerScore.text = FormatTime(score);
 
         NullCheck();
 
@@ -27,7 +27,13 @@ public class SetRanking : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if(isRemove)
+        {
+            if (Input.GetKeyDown(KeyCode.Delete))
+            {
+                RemoveRanking();
+            }
+        }
     }
 
     /// <summary>
@@ -110,13 +116,44 @@ public class SetRanking : MonoBehaviour
     {
         for(int idx = 0; idx < 5; idx++)
         {
-            if (ranks[idx] == 0f)
+            if (ranks[idx+1] == 0f)
             {
-                txtRanks[idx].text = "___.__";
+                txtRanks[idx].text = "__:__.__";
                 continue;
             }
-
-            txtRanks[idx].text = ranks[idx + 1].ToString("f2"); 
+            txtRanks[idx].text = FormatTime(ranks[idx + 1]);
         }
     }
+
+    /// <summary>
+    /// ランキングを削除する
+    /// </summary>
+    private void RemoveRanking()
+    {
+        for(int idx = 1; idx <= 5; idx++)
+        {
+            PlayerPrefs.DeleteKey("Rank" + idx);
+        }
+
+        for(int idx = 1; idx <= 5 ; idx++)
+        {
+            ranks[idx] = 0;
+            PlayerPrefs.SetFloat("Rank" + idx, ranks[idx]);
+        }
+
+        SetText();
+    }
+
+    private string FormatTime(float score)
+    {
+        int minutes = (int)(score / 60);
+        float seconds = score % 60;
+        return string.Format("{0:00}:{1:00.00}", minutes, seconds);
+    }
+
+    public void SetPlayerTime(float time)
+    {
+        score = time;
+    }
+
 }
