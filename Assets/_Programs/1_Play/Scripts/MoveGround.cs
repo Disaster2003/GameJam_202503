@@ -12,7 +12,7 @@ public class MoveGround : MonoBehaviour
     /// <summary>
     /// 足場のタイプ
     /// </summary>
-    enum Obstacles
+    private enum Obstacles
     {
         Normal,
         LateralMovementRight,
@@ -26,6 +26,7 @@ public class MoveGround : MonoBehaviour
         Exit_disappear,
         Exit_disappear_Cnt,
         Attack,
+        Blinking
     }
 
     [SerializeField, Header("プレイヤーのポジション")] private GameObject player;
@@ -46,7 +47,7 @@ public class MoveGround : MonoBehaviour
     [SerializeField, Header("速さ(Attack)")] private float attackSpeed;
     [SerializeField, Header("プレイヤーの補正値(Attack)")] private float offset;
     [SerializeField, Header("画面端のx座標(Attack)")] private float minX;
-    [SerializeField, Header("間隔(Attack)")] private float interval;
+    [SerializeField, Header("間隔(Attack.Blinking)")] private float interval;
 
     private int currentTargetIndex = 0; // 現在のターゲットインデックス
 
@@ -66,13 +67,18 @@ public class MoveGround : MonoBehaviour
     /// <summary>
     /// タイマー
     /// </summary>
-    float time;
+    private float time;
+
+    /// <summary>
+    /// Blinkingのフラグ
+    /// </summary>
+    private bool isDiscover;
 
 
     /// <summary>
-    /// 触れて消えるフラグ
+    /// 触れて時間差で消えるフラグ
     /// </summary>
-    private bool isTach;
+    private bool isTime;
 
     /// <summary>
     /// 動いて消えるフラグ
@@ -80,16 +86,23 @@ public class MoveGround : MonoBehaviour
     private bool isExit;
 
     /// <summary>
+    /// 乗るフラグ
+    /// </summary>
+    private bool isTach;
+
+    /// <summary>
     /// 実効値
     /// </summary>
-    float index;
+    private float index;
 
     // Start is called before the first frame update
     void Start()
     {
         time = 0;
-        isTach = false;
+        isTime = false;
         isExit = false;
+        isTach = false;
+        isDiscover = false;
         index = 0;
         startPosition = transform.position;
         moveDirection = new Vector3(-1, 0, 0);
@@ -119,12 +132,15 @@ public class MoveGround : MonoBehaviour
         {
             case Obstacles.LateralMovementRight:
             case Obstacles.LateralMovementLeft:
+                isTach = true;
                 LateralMove(obstacles);
                 break;
             case Obstacles.VerticalMovement:
+                isTach = true;
                 VerticalMove();
                 break;
             case Obstacles.Target:
+                isTach = true;
                 TargetMove();
                 break;
             case Obstacles.RotateX:
@@ -133,13 +149,13 @@ public class MoveGround : MonoBehaviour
                 RotateMove(obstacles);
                 break;
             case Obstacles.Time_disappear:
-                if (isTach)
+                if (isTime)
                 {
                     if (time < 0)
                     {
                         collision2D.enabled = false;
                         spriteRenderer.enabled = false;
-                        isTach = false;
+                        isTime = false;
                     }
                 }
                 break;
@@ -162,6 +178,9 @@ public class MoveGround : MonoBehaviour
                 break;
             case Obstacles.Attack:
                 AttackMove();
+                break;
+            case Obstacles.Blinking:
+                BlinkingMove();
                 break;
         }
     }
@@ -258,13 +277,34 @@ public class MoveGround : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 時間差で現れたり消えたり
+    /// </summary>
+    private void BlinkingMove()
+    {
+        if(time < 0)
+        {
+            if(isDiscover)
+            {
+                collision2D.enabled = false;
+                spriteRenderer.enabled = false;
+            }
+            else
+            {
+                collision2D.enabled = true;
+                spriteRenderer.enabled = true;
+            }
+            isDiscover = !isDiscover;
+            time = interval;
+        }
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("aa");
         time = timer;
-        isTach = true;
+        isTime = true;
         isExit = false;
-        if (collision.gameObject.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player") && isTach)
         {
             // 触れたobjの親を移動床にする
             collision.transform.SetParent(transform);
@@ -275,7 +315,7 @@ public class MoveGround : MonoBehaviour
     {
         isExit = true;
         index++;
-        if (collision.gameObject.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player") && isTach)
         {
             // 触れたobjの親を移動床にする
             collision.transform.SetParent(null);
