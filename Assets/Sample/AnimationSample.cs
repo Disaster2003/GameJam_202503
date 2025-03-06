@@ -37,7 +37,7 @@ public class AnimationSample : MonoBehaviour
     /// </summary>
     private void NullCheck()
     {
-        if (spriteRenderer = null)
+        if (spriteRenderer == null)
         {
             Debug.LogError("SpriteRendererコンポーネントが取得できません");
         }
