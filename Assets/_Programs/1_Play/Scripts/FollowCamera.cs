@@ -7,10 +7,13 @@ public class FollowCamera : MonoBehaviour
 {
     [SerializeField] private GameObject target;    // 追従するターゲット（プレイヤー）
     [SerializeField] private float cameraSize = 5f; //カメラサイズ
-    [Header("カメラサイズの2倍")]
-    [SerializeField] private float offsetY = 10f;  // 各階層の高さ
-    private float currentLayer = 0f;// 現在のカメラ階層
+    private float offsetY;  // 各階層の高さ
     private float targetLayer = 0f; //今いる階層
+
+    private void Start()
+    {
+        offsetY = cameraSize * 2;
+    }
 
     void Update()
     {
@@ -25,14 +28,12 @@ public class FollowCamera : MonoBehaviour
         {
             targetLayer++;
             cameraPos.y = targetLayer * offsetY;
-            currentLayer = targetLayer;
         }
         // プレイヤーがカメラより下に移動したら階層を下げる
         else if (targetY < cameraY-cameraSize)
         {
             targetLayer--;
             cameraPos.y = targetLayer * offsetY;
-            currentLayer = targetLayer;
         }
 
         // X, Z座標は変更せず、固定
@@ -41,5 +42,10 @@ public class FollowCamera : MonoBehaviour
 
         // カメラ位置を更新
         transform.position = cameraPos;
+    }
+
+    public float GetTargetLayer()
+    {
+        return targetLayer;
     }
 }
