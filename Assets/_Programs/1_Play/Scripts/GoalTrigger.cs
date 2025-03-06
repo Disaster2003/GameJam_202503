@@ -13,10 +13,21 @@ public class GoalTrigger : MonoBehaviour
     [SerializeField] private UnityEditor.SceneAsset nextSceneNameAsset; //エディタ用
 #endif
 
+    private float finalTime;
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if(other.CompareTag("Player"))
         {
+            CountUpTimer timerScript = GameObject.FindFirstObjectByType<CountUpTimer>();
+            if(timerScript != null)
+            {
+                timerScript.EndGame();
+                finalTime = timerScript.GetTimer();
+            }
+            
+            SceneManager.sceneLoaded += ResultSceneLoaded;  //イベントに登録
+
             SceneManager.LoadScene(nextSceneName);
         }
     }
@@ -30,4 +41,13 @@ public class GoalTrigger : MonoBehaviour
         }
     }
 #endif
+
+    private void ResultSceneLoaded(Scene next, LoadSceneMode mode)
+    {
+        SetRanking setRanking = GameObject.FindFirstObjectByType<SetRanking>();
+
+        setRanking.SetPlayerTime(finalTime); //タイムを渡す処理
+
+        SceneManager.sceneLoaded -= ResultSceneLoaded;  //イベント解除
+    }
 }
