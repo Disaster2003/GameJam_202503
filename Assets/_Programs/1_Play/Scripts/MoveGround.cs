@@ -17,8 +17,12 @@ public class MoveGround : MonoBehaviour
         LateralMovement,
         VerticalMovement,
         target,
-        rotate,
-        disappear
+        rotateX,
+        rotateY,
+        rotateZ,
+        time_disappear,
+        exit_disappear
+
     }
 
     [SerializeField, Header("キャラクターのポジション")] private GameObject character;
@@ -49,9 +53,14 @@ public class MoveGround : MonoBehaviour
 
 
     /// <summary>
-    /// 消えるフラグ
+    /// 触れて消えるフラグ
     /// </summary>
     private bool isTach;
+
+    /// <summary>
+    /// 動いて消えるフラグ
+    /// </summary>
+    private bool isExit;
 
     ///// <summary>
     ///// 実効値
@@ -63,6 +72,7 @@ public class MoveGround : MonoBehaviour
     {
         time = 0;
         isTach = false;
+        isExit = false;
         //index = 0;
         startPosition = transform.position;
         Debug.Log(2 * ((floor - 1) * widthY));
@@ -74,7 +84,9 @@ public class MoveGround : MonoBehaviour
     void Update()
     {
         time -= Time.deltaTime;
-        SetObstacles();
+        SetObstacles(obstacles1);
+        SetObstacles(obstacles2);
+
         if (character.transform.position.y > widthY + (2 * (floor * widthY))
            || character.transform.position.y < (2 * ((floor - 1) * widthY)) + widthY)
         {
@@ -84,9 +96,9 @@ public class MoveGround : MonoBehaviour
     }
 
     
-    void SetObstacles()
+    void SetObstacles(Obstacles obstacles)
     {
-        switch (obstacles1)
+        switch (obstacles)
         {
             case Obstacles.LateralMovement:
                 LateralMove();
@@ -97,10 +109,16 @@ public class MoveGround : MonoBehaviour
             case Obstacles.target:
                 TargetMove();
                 break;
-            case Obstacles.rotate:
-                RotateMove();
+            case Obstacles.rotateX:
+                RotateMoveX();
                 break;
-            case Obstacles.disappear:
+            case Obstacles.rotateY:
+                RotateMoveY();
+                break;
+            case Obstacles.rotateZ:
+                RotateMoveZ();
+                break;
+            case Obstacles.time_disappear:
                 if (isTach)
                 {
                     if (time < 0)
@@ -111,30 +129,12 @@ public class MoveGround : MonoBehaviour
                     }
                 }
                 break;
-        }
-
-        switch (obstacles2)
-        {
-            case Obstacles.LateralMovement:
-                LateralMove();
-                break;
-            case Obstacles.VerticalMovement:
-                VerticalMove();
-                break;
-            case Obstacles.target:
-                TargetMove();
-                break;
-            case Obstacles.rotate:
-                RotateMove();
-                break;
-            case Obstacles.disappear:
-                if (isTach)
+            case Obstacles.exit_disappear:
+                if(isExit)
                 {
-                    if (time < 0)
-                    {
-                        gameObject.SetActive(false);
-                        isTach =false;
-                    }
+                    collision2D.enabled = false;
+                    spriteRenderer.enabled = false;
+                    isExit = false;
                 }
                 break;
         }
@@ -183,7 +183,15 @@ public class MoveGround : MonoBehaviour
         }
     }
 
-    void RotateMove()
+    void RotateMoveX()
+    {
+        transform.Rotate(Vector3.right * -rotateSpeed * Time.deltaTime);
+    }
+    void RotateMoveY()
+    {
+        transform.Rotate(Vector3.up * -rotateSpeed * Time.deltaTime);
+    }
+    void RotateMoveZ()
     {
         transform.Rotate(Vector3.forward * -rotateSpeed * Time.deltaTime);
     }
@@ -193,5 +201,10 @@ public class MoveGround : MonoBehaviour
         Debug.Log("aa");
         time = timer;
         isTach = true;
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        isExit = true;
     }
 }

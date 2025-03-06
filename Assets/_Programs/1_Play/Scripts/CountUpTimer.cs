@@ -5,12 +5,13 @@ using UnityEngine;
 
 public class CountUpTimer : MonoBehaviour
 {
+    [SerializeField] private TMP_Text timerText;
     private float timer;    //タイマー
     private bool isGameRunning; //ゲーム中かどうか
 
     void Start()
     {
-        
+        StartGame();
     }
 
     void Update()
@@ -18,6 +19,7 @@ public class CountUpTimer : MonoBehaviour
         if(isGameRunning)
         {
             timer += Time.deltaTime;    //ゲーム中は時間をカウント
+            UpdateTimerDisplay();   //タイマーの表示を更新
         }
     }
 
@@ -35,5 +37,20 @@ public class CountUpTimer : MonoBehaviour
     public void RestartGame()
     {
         StartGame();
+    }
+
+    void UpdateTimerDisplay()
+    {
+        timerText.text = FormatTime(timer);
+    }
+
+    string FormatTime(float time)
+    {
+        //分と秒を計算
+        int minutes = Mathf.FloorToInt(timer / 60f);
+        float seconds = timer % 60f;
+
+        //秒数を2桁表示にする
+        return string.Format("{0:D2}:{1:00.00}", minutes, seconds);
     }
 }
