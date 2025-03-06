@@ -41,19 +41,16 @@ public class CountUpTimer : MonoBehaviour
 
     void UpdateTimerDisplay()
     {
+        timerText.text = FormatTime(timer);
+    }
+
+    string FormatTime(float time)
+    {
         //•ª‚Æ•b‚ğŒvZ
         int minutes = Mathf.FloorToInt(timer / 60f);
         float seconds = timer % 60f;
 
         //•b”‚ğ2Œ…•\¦‚É‚·‚é
-        timerText.text = string.Format("{0:D2}:{1:00.00}", minutes, seconds);
-    }
-
-    string FormatTime(float time)
-    {
-        int minutes = Mathf.FloorToInt(timer / 60f);
-        float seconds = timer % 60f;
-
         return string.Format("{0:D2}:{1:00.00}", minutes, seconds);
     }
 }
