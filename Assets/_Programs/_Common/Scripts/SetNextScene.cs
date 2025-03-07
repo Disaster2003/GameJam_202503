@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class SetNextScene : MonoBehaviour
 {
-    [SerializeField] GameManager.STATE_SCENE state_scene;
+    [SerializeField, Header("Ÿ‚É‘JˆÚ‚·‚éƒV[ƒ“")]
+    private GameManager.STATE_SCENE state_scene;
 
     // Start is called before the first frame update
     void Start()
