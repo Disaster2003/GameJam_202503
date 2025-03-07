@@ -1,16 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class DistanceToGoalGauge : MonoBehaviour
 {
+    [SerializeField, Header("ゲージを使用するか")] private bool UseSlider = true;
     [SerializeField] private Slider distanceSlider;
     [SerializeField] private RectTransform playerIcon;
+    [SerializeField] private float startPosX;
+    [SerializeField] private float startPosY;
+    [SerializeField] private float endPosY;
     private DistanceToGoal distanceToGoal;
-    private float startPosX;
-    private float startPosY;
-    private float endPosY;
     private float sliderValue;
 
     void Start()
@@ -31,7 +33,11 @@ public class DistanceToGoalGauge : MonoBehaviour
     {
         float maxDistance = distanceToGoal.GetMaxDistance();
         sliderValue = Mathf.InverseLerp(maxDistance, 0, distance);
-        distanceSlider.value = sliderValue;
+
+        if(UseSlider)
+        {
+            distanceSlider.value = sliderValue;
+        }
     }
 
     void UpdatePlayerIcon()
@@ -48,10 +54,13 @@ public class DistanceToGoalGauge : MonoBehaviour
     void SetPlayerIcon()
     {
         //ゲージの幅を取得
-        RectTransform gaugeRect = distanceSlider.GetComponent<RectTransform>();
-        startPosX = (gaugeRect.localPosition.x - (gaugeRect.rect.height / 2) + playerIcon.rect.width);
-        startPosY = (gaugeRect.localPosition.y - (gaugeRect.rect.width/2));
-        endPosY = (startPosY + gaugeRect.rect.width);
+        if(UseSlider) 
+        {
+            RectTransform gaugeRect = distanceSlider.GetComponent<RectTransform>();
+            startPosX = (gaugeRect.localPosition.x - (gaugeRect.rect.height / 2) + playerIcon.rect.width);
+            startPosY = (gaugeRect.localPosition.y - (gaugeRect.rect.width / 2));
+            endPosY = (startPosY + gaugeRect.rect.width);
+        }
 
         playerIcon.anchoredPosition = new Vector2(startPosX, startPosY);
     }
