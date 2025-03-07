@@ -354,12 +354,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac9a5001a57dc104daed28055c3953b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  distanceSlider: {fileID: 1502357854}
   playerIcon: {fileID: 1799912785}
-  startPosX: 0
-  startPosY: 0
-  endPosY: 0
-  UseSlider: 1
+  startPosX: -800
+  startPosY: -400
+  endPosY: 400
 --- !u!1 &497360855
 GameObject:
   m_ObjectHideFlags: 0
@@ -1548,7 +1546,6 @@ MonoBehaviour:
   - {fileID: 1750848236}
   - {fileID: 939391182}
   - {fileID: 2049388798}
-  - {fileID: 939391182}
 --- !u!1 &1483975292
 GameObject:
   m_ObjectHideFlags: 0
