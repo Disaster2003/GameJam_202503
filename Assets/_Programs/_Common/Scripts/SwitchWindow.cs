@@ -9,6 +9,8 @@ public class SwitchWindow : MonoBehaviour
     [SerializeField] private GameObject window;
     [SerializeField] private bool isSwitch;
 
+    [SerializeField] private Image imgFadePanel;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -29,6 +31,7 @@ public class SwitchWindow : MonoBehaviour
     /// </summary>
     private void WindowSwitch()
     {
+        if (!imgFadePanel.enabled) return;
         if (window.activeSelf == isSwitch) return;
 
         Time.timeScale = (isSwitch) ? 0 : 1;

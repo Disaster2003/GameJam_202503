@@ -142,3 +142,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08d25804a08afbd40b844a594418d0a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  decide: {fileID: 8300000, guid: a9ec210d4cc74a04f9b600d7a0228701, type: 3}
+  select: {fileID: 8300000, guid: bd2e4cef1d0be9d49b4134398dbb3065, type: 3}
