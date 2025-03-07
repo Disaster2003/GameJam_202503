@@ -48,6 +48,8 @@ public class SetRanking : MonoBehaviour
         }
     }
 
+    public float SetScore { set { score = value; } }
+
     /// <summary>
     /// データ領域を初期化、読み込みする
     /// </summary>
@@ -147,10 +149,4 @@ public class SetRanking : MonoBehaviour
         float seconds = score % 60;
         return string.Format("{0:00}:{1:00.00}", minutes, seconds);
     }
-
-    public void SetPlayerTime(float time)
-    {
-        score = time;
-    }
-
 }
