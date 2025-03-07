@@ -30,7 +30,7 @@ public class MoveGround : MonoBehaviour
         Penetration,
     }
 
-    [SerializeField, Header("プレイヤーのポジション")] private GameObject player;
+    //[SerializeField, Header("プレイヤーのポジション")] private GameObject player;
     [SerializeField, Header("階層")] private float floor;
 
     [SerializeField, Header("障害物の種類")] private Obstacles obstacles1;
@@ -51,6 +51,7 @@ public class MoveGround : MonoBehaviour
 
     private int currentTargetIndex = 0; // 現在のターゲットインデックス
 
+    private GameObject player;
 
     /// <summary>
     /// カメラ
@@ -119,6 +120,7 @@ public class MoveGround : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        player = GameObject.FindGameObjectWithTag("Player");
         cam = Camera.main;
         if (cam != null)
         {
