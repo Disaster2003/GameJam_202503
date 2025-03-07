@@ -496,7 +496,7 @@ GameObject:
   - component: {fileID: 3922040691072894629}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -592,7 +592,6 @@ MonoBehaviour:
   RayDistance: 0.5
   RayWidth: 0.3
   JumpGageImage: {fileID: 413448431320585688}
-  canvas: {fileID: 1037855070128522040}
   JumpCountImage:
   - {fileID: 9061282862595397247}
   - {fileID: 8936624543185681819}

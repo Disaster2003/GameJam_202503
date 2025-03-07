@@ -183,7 +183,7 @@ public class PlayerController : MonoBehaviour
             // インターバル中
             timerAudio += Time.deltaTime;
         }
-
+        if (groundTime > jumpComboTime) jumpCount = 0;  //連続ジャンプではない場合は0
     }
     
     void FixedUpdate()
@@ -191,7 +191,6 @@ public class PlayerController : MonoBehaviour
         //ジャンプ
         if (isJump && isGround)
         {
-            if (groundTime > jumpComboTime) jumpCount = 0;  //連続ジャンプではない場合は0
             rbody2D.velocity = new Vector2(rbody2D.velocity.x, 0);  //y軸の力を0にする
             float totalJumpMultiplier = (float)Math.Pow(jumpMultiplier, jumpCount); //ジャンプ力の倍率をジャンプの回数によって変える
             rbody2D.AddForce(Vector2.up * jumpPower * totalJumpMultiplier); //ジャンプ
