@@ -130,7 +130,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 0}
   floor: 0
-  obstacles1: 0
+  obstacles1: 1
   obstacles2: 0
   lateraSpeed: 0
   lateraRange: 0
