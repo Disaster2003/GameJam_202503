@@ -35,7 +35,13 @@ public class GameManager : SingletonSample<GameManager>
     // Update is called once per frame
     void Update()
     {
-        
+        if(state_scene == STATE_SCENE.TITLE)
+        {
+            if (Input.GetKeyUp(KeyCode.Space))
+            {
+                FindFirstObjectByType<FadeIn_Out>().StartFadeOut();
+            }
+        }
     }
 
     /// <summary>
