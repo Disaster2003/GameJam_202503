@@ -81,6 +81,8 @@ public class FadeIn_Out : MonoBehaviour
     /// </summary>
     public void StartFadeOut()
     {
+        if (timerColor < INTERVAL_FADE) return;
+
         isFadeOut = true;
         imgFadePanel.enabled = true;
         timerColor = 0f;
