@@ -43,6 +43,7 @@ public class MoveGround : MonoBehaviour
     [SerializeField, Header("回転の速さ(Rotate)")] private float rotateSpeed;
     [SerializeField, Header("足場の消える時間(Time_disappear)")] private float timer;
     [SerializeField, Header("足場の離れる回数(Exit_disappear_Cnt)")] private int exitCnt;
+    [SerializeField, Header("画像差し替え(disappear)")] private SpriteRenderer newRenderer;
     [SerializeField, Header("所定の座標(Target)")] private Transform[] targets;
     [SerializeField, Header("速さ(Attack)")] private float attackSpeed;
     [SerializeField, Header("プレイヤーの補正値(Attack)")] private float offset;
@@ -51,6 +52,13 @@ public class MoveGround : MonoBehaviour
 
     private int currentTargetIndex = 0; // 現在のターゲットインデックス
 
+    private SpriteRenderer SpriteRenderer;
+
+    private SpriteRenderer saveRenderer;
+
+    /// <summary>
+    /// プレイヤーのオブジェクト
+    /// </summary>
     private GameObject player;
 
     /// <summary>
