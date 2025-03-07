@@ -7,6 +7,8 @@ using System;
 using static UnityEngine.UI.Image;
 using System.Drawing;
 using static UnityEngine.RuleTile.TilingRuleOutput;
+using NUnit.Framework.Constraints;
+using UnityEngine.Audio;
 
 public class PlayerController : MonoBehaviour
 {
@@ -16,7 +18,8 @@ public class PlayerController : MonoBehaviour
         rbody2D = GetComponent<Rigidbody2D>();
         // コンポーネントの取得
         spriteRenderer = GetComponent<SpriteRenderer>();
-       
+        audioSource = GetComponent<AudioSource>();
+
         // タイマーの初期化
         timerAnimation = 0f;
 
@@ -25,8 +28,20 @@ public class PlayerController : MonoBehaviour
         // 画像の初期化
         spriteRenderer.sprite = spritesWalk[0];
 
+        //ジャンプカウント初期化
+        for (int i = 0; i < JumpCountImage.Length; i++)
+        {
+            JumpCountImage[i].enabled = false;  //全て非表示にする
+        }
+
+        //サウンドの初期化
+        audioSource.clip = moveSE;
+
         //移動速度の初期化
         moveSpeed = defaultMoveSpeed;
+
+        //方向初期化
+        input = Input.GetAxisRaw("Horizontal");
     }
 
     // Update is called once per frame
@@ -36,23 +51,21 @@ public class PlayerController : MonoBehaviour
         if(groundTime < jumpComboTime)
         {
             float gageRatio = groundTime / jumpComboTime;
-            //JumpGageSpriteRender.transform.localScale = new Vector3(1.0f - gageRatio, 0.1f, 1.0f);  // ゲージを伸縮 (X軸の大きさを変更)
             JumpGageImage.fillAmount = 1.0f - gageRatio;
         }
-        else if(groundTime > jumpComboTime)
+        //連続ジャンプの時間外か一回目のジャンプなら
+        if(groundTime > jumpComboTime || jumpCount == 0)
         {
-           //JumpGageSpriteRender.enabled = false;   //ゲージを非表示
             JumpGageImage.enabled = false;   //ゲージを非表示
         }
 
-        //ジャンプキーを押したとき
+        //ジャンプキーを押したとき(地面についている場合)
         if (Input.GetKeyDown(KeyCode.Space) && isGround)
         {
             isJump = true;
             return;
         }
 
-        float input = Input.GetAxisRaw("Horizontal");   //プレイヤーの方向を読み取る
         //もしプレイヤーが止まっていなければ
         if (input != 0)
         {
@@ -72,62 +85,65 @@ public class PlayerController : MonoBehaviour
         //地面に接しているとき
         if (HitObjectL || HitObjectR)
         {
-            moveSpeed = defaultMoveSpeed;   //移動速度を通常に戻す
+            if (!isGround && state == State.FALL)
+            {
+                state = State.LAND; //もし地面に接して1回目ならアニメーションを着地にする
+                audioSource.PlayOneShot(landSE); //着地SE再生
+            }
+            //止まっているとき
             if (input == 0)
             {
-                state = State.STOP; //アニメーションを待機にする
+                if (state != State.LAND)  //着地アニメーションではなく、前と同じ位置なら
+                {
+                    state = State.STOP; //アニメーションを待機にする
+                }
             }
+            //動いているとき
             else
             {
                 state = State.WALK; //アニメーションを歩きにする
+                audioSource.clip = moveSE;  //SEを歩きにする
             }
-
-            //上下に動いていないとき
-            if (rbody2D.velocity.y == 0)
-            {
-                isGround = true;
-                groundTime += Time.deltaTime;   //地面との接触時間の加算
-            }
-
-            //if(groundTime < jumpComboTime) JumpGageSpriteRender.enabled = true;    //ゲージを表示
-            if (groundTime < jumpComboTime) JumpGageImage.enabled = true;   //ゲージを表示
+            if(rbody2D.velocity.y == 0)isGround = true; //上下に動いていない場合
+            if(isGround) moveSpeed = defaultMoveSpeed;   //移動速度を通常に戻す
+            groundTime += Time.deltaTime;   //地面との接触時間の加算
+            if (groundTime < jumpComboTime && jumpCount != 0) JumpGageImage.enabled = true;   //ゲージを表示
         }
         //地面に接していないとき
         else
         {
-            if (rbody2D.velocity.y >= 0)
+            isGround = false;
+            //上昇
+            if (rbody2D.velocity.y > 0)
             {
                 state = State.JUMP; //アニメーションをジャンプにする
             }
-            else if(rbody2D.velocity.y <= 0)
+            //下降
+            else if (rbody2D.velocity.y < 0)
             {
                 state = State.FALL; //アニメーションを落下にする
             }
+            //静止(当たり判定のせいで端っこに立つと地面に触れていないのに地面の上に立てることがある)
+            else
+            {
+                state = State.STOP;
+                isGround = true;
+            }
 
-            isGround = false;
             groundTime = 0; //地面と離れたら初期化
-            //JumpGageSpriteRender.enabled = false;   //ゲージを非表示
             JumpGageImage.enabled = false;   //ゲージを非表示
         }
 
-        // 進行方向へ向きを変える
-        if (input > 0)
-        {
-            transform.eulerAngles = new Vector3(0, 0, 0);
-        }
-        else if (input < 0)
-        {
-            transform.eulerAngles = new Vector3(0, 180, 0);
-        }
-
-        //アニメーション差分
+        //アニメーション・SE差分
         switch (state)
         {
             case State.STOP:
                 Animation(spritesStop);
+                if(timerAudio >= intervalAudio) audioSource.Stop(); //音を止める
                 break;
             case State.WALK:
                 Animation(spritesWalk);
+                PlaySE(moveSE); //歩きSE再生
                 break;
             case State.RUN:
                 Animation(spritesRun);
@@ -137,10 +153,64 @@ public class PlayerController : MonoBehaviour
                 break;
             case State.FALL:
                 Animation(spritesFall);
+                audioSource.Stop(); //音を止める
                 break;
-
+            case State.LAND:
+                Animation(spritesLanded);
+                break;
         }
-        
+
+        if (timerAudio < intervalAudio)
+        {
+            // インターバル中
+            timerAudio += Time.deltaTime;
+        }
+    }
+    
+    void FixedUpdate()
+    {
+        //ジャンプ
+        if (isJump && isGround)
+        {
+            if (groundTime > jumpComboTime) jumpCount = 0;  //連続ジャンプではない場合は0
+            float totalJumpMultiplier = (float)Math.Pow(jumpMultiplier, jumpCount); //ジャンプ力の倍率をジャンプの回数によって変える
+            rbody2D.AddForce(Vector2.up * jumpPower * totalJumpMultiplier); //ジャンプ
+            if(jumpCount == 2) moveSpeed = jumpMoveSpeed;  //移動速度をジャンプ中の速度に変更
+
+            AudioSource tempAudioSource = gameObject.AddComponent<AudioSource>();   // 一時的な AudioSource を作成
+            tempAudioSource.pitch = defaultPitch + jumpCount * pitchMultiplier;  // ピッチを変更
+            tempAudioSource.PlayOneShot(jumpSE);    // 音を再生
+            Destroy(tempAudioSource, jumpSE.length);  // 音の長さ分後に削除
+
+            //1回目のジャンプ
+            if (jumpCount == 0)
+            {
+                for (int i = 0; i < JumpCountImage.Length; i++)
+                {
+                    JumpCountImage[i].enabled = false;  //全て非表示にする
+                }
+            }
+            JumpCountImage[jumpCount].enabled = true;   //回数を表示
+
+            jumpCount++;    //ジャンプ回数を増やす
+            jumpCount %= maxJumpCombo; //最大連続ジャンプの回数で割ったあまりを取ることで連続ジャンプが最大以上に発生しないようにする
+            isJump = false;
+        }
+        // 左に移動
+        if (Input.GetKey(KeyCode.A))
+        {
+            transform.position -= new Vector3(moveSpeed, 0, 0);
+            transform.eulerAngles = new Vector3(0, 180, 0);
+            timerAudio = 0f;
+        }
+        // 右に移動
+        if (Input.GetKey(KeyCode.D))
+        {
+            transform.position += new Vector3(moveSpeed, 0, 0);
+            transform.eulerAngles = new Vector3(0, 0, 0);
+            timerAudio = 0f;
+        }
+        input = Input.GetAxisRaw("Horizontal"); //方向を取得
     }
 
     /// <summary>
@@ -179,6 +249,11 @@ public class PlayerController : MonoBehaviour
             {
                 if (i == _sprites.Length - 1)
                 {
+                    if (state == State.LAND)
+                    {
+                        state = State.STOP;   //もし着地のアニメーションが終わったら待機に変更
+                        return; //画像が戻らないようにする
+                    }
                     // 最初の画像に戻す
                     spriteRenderer.sprite = _sprites[0];
                     return;
@@ -198,50 +273,38 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
-    
-    void FixedUpdate()
-    {
-        //ジャンプ
-        if (isJump && isGround)
-        {
-            if (groundTime > jumpComboTime) jumpCount = 0;  //連続ジャンプではない場合は0
-            float totalJumpMultiplier = (float)Math.Pow(jumpMultiplier, jumpCount); //ジャンプ力の倍率をジャンプの回数によって変える
-            rbody2D.AddForce(Vector2.up * jumpPower * totalJumpMultiplier); //ジャンプ
 
-            jumpCount++;    //ジャンプ回数を増やす
-            jumpCount %= maxJumpCombo; //最大連続ジャンプの回数で割ったあまりを取ることで連続ジャンプが最大以上に発生しないようにする
-            isJump = false;
-            if(jumpCount == 0) moveSpeed = jumpMoveSpeed;  //移動速度をジャンプ中の速度に変更
-        }
-        // 左に移動
-        if (Input.GetKey(KeyCode.A))
+    private void PlaySE(AudioClip clip)
+    {
+        if (audioSource.clip == clip && audioSource.isPlaying)
         {
-            transform.position -= new Vector3(moveSpeed, 0, 0);
+            return;   //同じ音で再生中なら終了
         }
-        // 右に移動
-        if (Input.GetKey(KeyCode.D))
-        {
-            transform.position += new Vector3(moveSpeed, 0, 0);
-        }
+        audioSource.Stop(); //音を止める
+        audioSource.clip = clip;    //音を変更
+        audioSource.Play(); //音を再生
     }
 
+
     //プレイヤーの行動
-    enum State
+    private enum State
     {
         STOP = 0,   //待機
         WALK = 1,   //歩き
         RUN = 2,    //走り
         JUMP = 3,   //ジャンプ
         FALL = 4,   //落下
+        LAND = 5, //着地
     }
 
 
     Rigidbody2D rbody2D;  //rigidbody2dを取得
-    private State state = State.STOP;   //プレイヤーの現在の動き   
+    private float input;    //プレイヤーの方向
+    private State state = State.STOP;   //プレイヤーの現在の動き 
     private float moveSpeed = 0;
     [Header("移動速度")]
     public float defaultMoveSpeed = 0.1f; //移動速度
-    public float jumpMoveSpeed = 0.3f;  //ジャンプ中の移動速度
+    public float jumpMoveSpeed = 0.2f;  //ジャンプ中の移動速度
     [Header("ジャンプ")]
     public float jumpPower = 300f;    //ジャンプ力
     public float jumpMultiplier = 1.2f;    //連続ジャンプ時のジャンプ力の倍率
@@ -257,8 +320,8 @@ public class PlayerController : MonoBehaviour
     private bool isGround  = false; //地面と接触しているかどうか
 
     [Header("ジャンプゲージ")]
-    //public SpriteRenderer JumpGageSpriteRender = null;
     public UnityEngine.UI.Image JumpGageImage = null;
+    [SerializeField] public UnityEngine.UI.Image[] JumpCountImage;
     private SpriteRenderer spriteRenderer = null;
     [Header("アニメーション画像")]
     [SerializeField] private Sprite[] spritesStop;
@@ -266,7 +329,18 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Sprite[] spritesRun;
     [SerializeField] private Sprite[] spritesJump;
     [SerializeField] private Sprite[] spritesFall;
+    [SerializeField] private Sprite[] spritesLanded;
     private float timerAnimation = 0f;
     [SerializeField, Header("アニメーション間隔")]
     private float INTERVAL_ANIMATION = 0f;
+
+    private AudioSource audioSource;
+    private float intervalAudio = 0.5f;    //SEが必ず再生される時間
+    private float timerAudio = 0f;
+    [Header("SE")]
+    public AudioClip moveSE;
+    public AudioClip jumpSE;
+    public AudioClip landSE;
+    public float defaultPitch = 1.0f; //ジャンプの初期ピッチ
+    public float pitchMultiplier = 0f;  //ピッチの上昇幅
 }
