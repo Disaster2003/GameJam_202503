@@ -6,17 +6,16 @@ using UnityEngine;
 public class SetRanking : MonoBehaviour
 {
     [SerializeField, Header("デバッグ用")] private float score;
-    [SerializeField, Header("デバッグ用")] private bool isRemove;
     [SerializeField] TextMeshProUGUI txtPlayerScore;
     [SerializeField] TextMeshProUGUI[] txtRanks = new TextMeshProUGUI[5];
     private float[] ranks = new float[6];
+    int newRank;
+
+    [SerializeField] private AudioClip clear;
 
     // Start is called before the first frame update
     void Start()
     {
-        // スコアの初期化
-        txtPlayerScore.text = FormatTime(score);
-
         NullCheck();
 
         GetRanking();
@@ -27,12 +26,9 @@ public class SetRanking : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(isRemove)
+        if (Input.GetKeyDown(KeyCode.Delete))
         {
-            if (Input.GetKeyDown(KeyCode.Delete))
-            {
-                RemoveRanking();
-            }
+            RemoveRanking();
         }
     }
 
@@ -53,6 +49,8 @@ public class SetRanking : MonoBehaviour
             }
         }
     }
+
+    public float SetScore { set { score = value; } }
 
     /// <summary>
     /// データ領域を初期化、読み込みする
@@ -83,10 +81,10 @@ public class SetRanking : MonoBehaviour
     /// </summary>
     private void UpdateRanking()
     {
-        int newRank = 0; // まず今回のスコアを0位と仮定する
+        newRank = 0; // まず今回のスコアを0位と仮定する
         for (int idx = 5; idx > 0; idx--)
         {
-            if (ranks[idx] > score || ranks[idx] == 0f)
+            if (ranks[idx] == 0f || ranks[idx] > score)
             {
                 // 新しいランクとして判定する
                 newRank = idx;
@@ -96,6 +94,7 @@ public class SetRanking : MonoBehaviour
         // 0位のままでならランクイン外
         if (newRank == 0) return;
 
+        GameManager.GetInstance.PlaySE(clear);
         for (int idx = 5; idx > newRank; idx--)
         {
             // 繰り下げ処理
@@ -114,14 +113,21 @@ public class SetRanking : MonoBehaviour
     /// </summary>
     private void SetText()
     {
-        for(int idx = 0; idx < 5; idx++)
+        // スコアの初期化
+        txtPlayerScore.text = FormatTime(score);
+
+        for (int idx = 0; idx < 5; idx++)
         {
-            if (ranks[idx+1] == 0f)
+            if (ranks[idx + 1] == 0f)
             {
                 txtRanks[idx].text = "__:__.__";
                 continue;
             }
+
             txtRanks[idx].text = FormatTime(ranks[idx + 1]);
+
+            // ランクインしたら、その箇所だけ色変更
+            if (idx + 1 == newRank) txtRanks[idx].color = Color.yellow;
         }
     }
 
@@ -130,17 +136,13 @@ public class SetRanking : MonoBehaviour
     /// </summary>
     private void RemoveRanking()
     {
-        for(int idx = 1; idx <= 5; idx++)
-        {
-            PlayerPrefs.DeleteKey("Rank" + idx);
-        }
+        txtRanks[newRank - 1].color = Color.white;
+        newRank = 0;
 
-        for(int idx = 1; idx <= 5 ; idx++)
-        {
-            ranks[idx] = 0;
-            PlayerPrefs.SetFloat("Rank" + idx, ranks[idx]);
-        }
+        // データ領域の初期化
+        PlayerPrefs.DeleteAll();
 
+        GetRanking();
         SetText();
     }
 
@@ -150,10 +152,4 @@ public class SetRanking : MonoBehaviour
         float seconds = score % 60;
         return string.Format("{0:00}:{1:00.00}", minutes, seconds);
     }
-
-    public void SetPlayerTime(float time)
-    {
-        score = time;
-    }
-
 }

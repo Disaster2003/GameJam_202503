@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 public class GameManager : SingletonSample<GameManager>
@@ -14,6 +15,7 @@ public class GameManager : SingletonSample<GameManager>
     private STATE_SCENE state_scene;
 
     private AudioSource audioSource;
+    [SerializeField] private AudioClip decide;
     private float volumeBGM = 0.5f;
     private float volumeSE = 0.5f;
 
@@ -35,7 +37,14 @@ public class GameManager : SingletonSample<GameManager>
     // Update is called once per frame
     void Update()
     {
-        
+        if (state_scene == STATE_SCENE.TITLE)
+        {
+            if (Input.GetKeyUp(KeyCode.Space))
+            {
+                PlaySE(decide);
+                FindFirstObjectByType<FadeIn_Out>().StartFadeOut();
+            }
+        }
     }
 
     /// <summary>

@@ -15,7 +15,7 @@ public class FollowCamera : MonoBehaviour
         offsetY = cameraSize * 2;
     }
 
-    void Update()
+    void LateUpdate()
     {
         Vector3 cameraPos = transform.position;
         float targetY = target.transform.position.y;
