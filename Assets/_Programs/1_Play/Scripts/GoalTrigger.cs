@@ -46,7 +46,7 @@ public class GoalTrigger : MonoBehaviour
     {
         SetRanking setRanking = GameObject.FindFirstObjectByType<SetRanking>();
 
-        setRanking.SetPlayerTime(finalTime); //タイムを渡す処理
+        setRanking.SetScore = finalTime; //タイムを渡す処理
 
         SceneManager.sceneLoaded -= ResultSceneLoaded;  //イベント解除
     }

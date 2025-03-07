@@ -29,11 +29,8 @@ public class SwitchWindow : MonoBehaviour
     /// </summary>
     private void WindowSwitch()
     {
-<<<<<<< HEAD
-=======
         if (window.activeSelf == isSwitch) return;
 
->>>>>>> 36e198edbf218ea7783cfa60e50f7efe739efb66
         Time.timeScale = (isSwitch) ? 0 : 1;
         window.SetActive(isSwitch);
     }
