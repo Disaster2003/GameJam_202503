@@ -11,6 +11,8 @@ public class SetRanking : MonoBehaviour
     private float[] ranks = new float[6];
     int newRank;
 
+    [SerializeField] private AudioClip clear;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -92,6 +94,7 @@ public class SetRanking : MonoBehaviour
         // 0ˆÊ‚Ì‚Ü‚Ü‚Å‚È‚çƒ‰ƒ“ƒNƒCƒ“ŠO
         if (newRank == 0) return;
 
+        GameManager.GetInstance.PlaySE(clear);
         for (int idx = 5; idx > newRank; idx--)
         {
             // ŒJ‚è‰º‚°ˆ—

@@ -253,6 +253,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state_scene: 1
+  decide: {fileID: 8300000, guid: a9ec210d4cc74a04f9b600d7a0228701, type: 3}
+  select: {fileID: 8300000, guid: bd2e4cef1d0be9d49b4134398dbb3065, type: 3}
 --- !u!1 &125357195
 GameObject:
   m_ObjectHideFlags: 0
@@ -523,6 +525,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state_scene: 0
+  decide: {fileID: 8300000, guid: a9ec210d4cc74a04f9b600d7a0228701, type: 3}
+  select: {fileID: 8300000, guid: bd2e4cef1d0be9d49b4134398dbb3065, type: 3}
 --- !u!1 &421814037
 GameObject:
   m_ObjectHideFlags: 0
@@ -792,6 +796,7 @@ MonoBehaviour:
   - {fileID: 1060372529}
   - {fileID: 2099146704}
   - {fileID: 125357197}
+  clear: {fileID: 8300000, guid: d9b70a857a96ad8489cfc24554b9659b, type: 3}
 --- !u!1 &679434233
 GameObject:
   m_ObjectHideFlags: 0
