@@ -102,6 +102,11 @@ public class MoveGround : MonoBehaviour
     private bool isTach;
 
     /// <summary>
+    /// 妨害フラグ
+    /// </summary>
+    private bool isAttack;
+
+    /// <summary>
     /// 貫通フラグ
     /// </summary>
     private bool isPenetration;
@@ -124,12 +129,13 @@ public class MoveGround : MonoBehaviour
         isTime = false;
         isExit = false;
         isTach = false;
+        isAttack = false;
         isDiscover = false;
         isPenetration = false;
         index = 0;
         startPosition = transform.position;
         moveDirection = new Vector3(-1, 0, 0);
-        collision2D = GetComponent<BoxCollider2D>();
+        collision2D = GetComponent<Collider2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
@@ -292,33 +298,39 @@ public class MoveGround : MonoBehaviour
     {
         if (time < 0)
         {
-
             if (transform.position.y >= player.transform.position.y - offset
-                || transform.position.y <= player.transform.position.y + offset)
+                && transform.position.y <= player.transform.position.y + offset)
             {
-                //左に流れる場合
-                if (startPosition.x > attackX)
-                {
-                    transform.position += moveDirection * attackSpeed * Time.deltaTime;
+                isAttack = true;
+            }
+        }
 
-                    //画面端に行ったとき
-                    if (transform.position.x < attackX)
-                    {
-                        time = interval;
-                        transform.position = startPosition;
-                    }
+        if(isAttack)
+        {
+            //左に流れる場合
+            if (startPosition.x > attackX)
+            {
+                transform.position += moveDirection * attackSpeed * Time.deltaTime;
+
+                //画面端に行ったとき
+                if (transform.position.x < attackX)
+                {
+                    time = interval;
+                    transform.position = startPosition;
+                    isAttack = false;
                 }
-                //右に流れる場合
-                else
-                {
-                    transform.position -= moveDirection * attackSpeed * Time.deltaTime;
+            }
+            //右に流れる場合
+            else
+            {
+                transform.position -= moveDirection * attackSpeed * Time.deltaTime;
 
-                    //画面端に行ったとき
-                    if (transform.position.x > attackX)
-                    {
-                        time = interval;
-                        transform.position = startPosition;
-                    }
+                //画面端に行ったとき
+                if (transform.position.x > attackX)
+                {
+                    time = interval;
+                    transform.position = startPosition;
+                    isAttack = false;
                 }
             }
         }
