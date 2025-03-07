@@ -31,8 +31,6 @@ public class MoveGround : MonoBehaviour
     }
 
     [SerializeField, Header("プレイヤーのポジション")] private GameObject player;
-    [SerializeField, Header("オブジェクトの縦幅")] private float objectWidth;
-    [SerializeField, Header("カメラの中央からの縦幅半分")] private float widthY;
     [SerializeField, Header("階層")] private float floor;
 
     [SerializeField, Header("障害物の種類")] private Obstacles obstacles1;
@@ -48,10 +46,21 @@ public class MoveGround : MonoBehaviour
     [SerializeField, Header("所定の座標(Target)")] private Transform[] targets;
     [SerializeField, Header("速さ(Attack)")] private float attackSpeed;
     [SerializeField, Header("プレイヤーの補正値(Attack)")] private float offset;
-    [SerializeField, Header("画面端のx座標(Attack)")] private float minX;
+    [SerializeField, Header("画面端のx座標(Attack)")] private float attackX;
     [SerializeField, Header("間隔(Attack.Blinking)")] private float interval;
 
     private int currentTargetIndex = 0; // 現在のターゲットインデックス
+
+
+    /// <summary>
+    /// カメラ
+    /// </summary>
+    private Camera cam;
+
+    /// <summary>
+    /// カメラの縦幅
+    /// </summary>
+    private float width;
 
     /// <summary>
     /// 物体の初期位置
@@ -63,7 +72,7 @@ public class MoveGround : MonoBehaviour
     /// </summary>
     private Vector3 moveDirection;
 
-    private BoxCollider2D collision2D;
+    private Collider2D collision2D;
     private SpriteRenderer spriteRenderer;
 
     /// <summary>
@@ -105,6 +114,12 @@ public class MoveGround : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        cam = Camera.main;
+        if (cam != null)
+        {
+            width = GetCameraWidth(cam);
+        }
+
         time = 0;
         isTime = false;
         isExit = false;
@@ -125,15 +140,39 @@ public class MoveGround : MonoBehaviour
         SetObstacles(obstacles1);
         SetObstacles(obstacles2);
 
-        if (player.transform.position.y > widthY + (2 * (floor * widthY))
-           || player.transform.position.y < (2 * ((floor - 1) * widthY)) + widthY)
+        if (player.transform.position.y > width + (2 * (floor * width))
+           || player.transform.position.y < (2 * ((floor - 1) * width)) + width)
         {
             collision2D.enabled = true;
             spriteRenderer.enabled = true;
         }
     }
 
+    /// <summary>
+    /// カメラの縦幅
+    /// </summary>
+    /// <param name="cam"></param>
+    /// <returns></returns>
+    private float GetCameraWidth(Camera cam)
+    {
+        if (cam.orthographic)
+        {
+            // 正射影カメラ (Orthographic) の場合
+            return cam.orthographicSize;
+        }
+        else
+        {
+            // 透視投影カメラ (Perspective) の場合
+            float height = Mathf.Tan(cam.fieldOfView * 0.5f * Mathf.Deg2Rad) * cam.transform.position.z;
+            return height;
+        }
+    }
 
+
+    /// <summary>
+    /// Obstaclesの選択結果
+    /// </summary>
+    /// <param name="obstacles"></param>
     private void SetObstacles(Obstacles obstacles)
     {
         switch (obstacles)
@@ -157,32 +196,11 @@ public class MoveGround : MonoBehaviour
                 RotateMove(obstacles);
                 break;
             case Obstacles.Time_disappear:
-                if (isTime)
-                {
-                    if (time < 0)
-                    {
-                        collision2D.enabled = false;
-                        spriteRenderer.enabled = false;
-                        isTime = false;
-                    }
-                }
+                DisappearMove(obstacles, isTime);
                 break;
             case Obstacles.Exit_disappear:
-                if (isExit)
-                {
-                    collision2D.enabled = false;
-                    spriteRenderer.enabled = false;
-                    isExit = false;
-                }
-                break;
             case Obstacles.Exit_disappear_Cnt:
-                if (isExit && index == exitCnt)
-                {
-                    collision2D.enabled = false;
-                    spriteRenderer.enabled = false;
-                    isExit = false;
-                    index = 0;
-                }
+                DisappearMove(obstacles,isExit);
                 break;
             case Obstacles.Attack:
                 AttackMove();
@@ -274,17 +292,35 @@ public class MoveGround : MonoBehaviour
     {
         if (time < 0)
         {
+
             if (transform.position.y >= player.transform.position.y - offset
                 || transform.position.y <= player.transform.position.y + offset)
             {
-                transform.position += moveDirection * attackSpeed * Time.deltaTime;
-            }
-        }
+                //左に流れる場合
+                if (startPosition.x > attackX)
+                {
+                    transform.position += moveDirection * attackSpeed * Time.deltaTime;
 
-        if (transform.position.x < minX - offset)
-        {
-            time = interval;
-            transform.position = startPosition;
+                    //画面端に行ったとき
+                    if (transform.position.x < attackX)
+                    {
+                        time = interval;
+                        transform.position = startPosition;
+                    }
+                }
+                //右に流れる場合
+                else
+                {
+                    transform.position -= moveDirection * attackSpeed * Time.deltaTime;
+
+                    //画面端に行ったとき
+                    if (transform.position.x > attackX)
+                    {
+                        time = interval;
+                        transform.position = startPosition;
+                    }
+                }
+            }
         }
     }
 
@@ -311,9 +347,8 @@ public class MoveGround : MonoBehaviour
     }
     private void PenetrationMove()
     {
-        float objW = gameObject.GetComponent<BoxCollider2D>().size.y - gameObject.GetComponent<SpriteRenderer>().bounds.size.y / 2;
         float playerWidth = player.GetComponent<PolygonCollider2D>().bounds.size.y / 2;
-        if (transform.position.y <= player.transform.position.y - playerWidth + objW)
+        if (transform.position.y <= player.transform.position.y - playerWidth)
         {
             isPenetration = true;
         }
@@ -322,7 +357,6 @@ public class MoveGround : MonoBehaviour
             isPenetration = false;
         }
 
-
         if(isPenetration)
         {
             collision2D.enabled = true;
@@ -330,6 +364,33 @@ public class MoveGround : MonoBehaviour
         else
         {
             collision2D.enabled= false;
+        }
+    }
+
+    /// <summary>
+    /// disappear型の処理
+    /// </summary>
+    /// <param name="flag">対応するフラグ</param>
+    private void DisappearMove(Obstacles obstacles,bool flag)
+    {
+        if(obstacles == Obstacles.Exit_disappear_Cnt)
+        {
+            if(flag && index == exitCnt)
+            {
+                collision2D.enabled = false;
+                spriteRenderer.enabled = false;
+                flag = false;
+                index = 0;
+            }
+        }
+        else
+        {
+            if(flag && time < 0)
+            {
+                collision2D.enabled = false;
+                spriteRenderer.enabled = false;
+                flag = false;
+            }
         }
     }
 

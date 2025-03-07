@@ -83,5 +83,9 @@ public class FadeIn_Out : MonoBehaviour
     {
         isFadeOut = true;
         imgFadePanel.enabled = true;
+<<<<<<< HEAD
+=======
+        timerColor = 0f;
+>>>>>>> 36e198edbf218ea7783cfa60e50f7efe739efb66
     }
 }
