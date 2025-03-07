@@ -11,4 +11,9 @@ public class StartPos : MonoBehaviour
         //オブジェクトの位置をプレイヤーの開始地点に設定
         player.transform.position = transform.position;
     }
+
+    public Vector3 GetStartPos()
+    {
+        return transform.position;
+    }
 }

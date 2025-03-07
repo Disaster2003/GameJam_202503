@@ -50,4 +50,9 @@ public class GoalTrigger : MonoBehaviour
 
         SceneManager.sceneLoaded -= ResultSceneLoaded;  //ƒCƒxƒ“ƒg‰ğœ
     }
+
+    public Vector3 GetGoalPos()
+    {
+        return transform.position;
+    }
 }

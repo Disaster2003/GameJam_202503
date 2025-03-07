@@ -14,6 +14,8 @@ public class GameManager : SingletonSample<GameManager>
     private STATE_SCENE state_scene;
 
     private AudioSource audioSource;
+    private float volumeBGM = 0.5f;
+    private float volumeSE = 0.5f;
 
     // Start is called before the first frame update
     void Start()
@@ -65,6 +67,25 @@ public class GameManager : SingletonSample<GameManager>
     /// <param name="SE">–Â‚ç‚·Œø‰Ê‰¹</param>
     public void PlaySE(AudioClip SE)
     {
+        audioSource.volume = volumeSE;
         audioSource.PlayOneShot(SE);
     }
+   
+    /// <summary>
+    /// BGM‚Ì‰¹—Ê‚ğæ“¾‚·‚é
+    /// </summary>
+    public float GetBGMVolume { get { return volumeBGM; } }
+    /// <summary>
+    /// BGM‚Ì‰¹—Ê‚ğİ’è‚·‚é
+    /// </summary>
+    public float SetBGMVolume { set { volumeBGM = value; } }
+
+    /// <summary>
+    /// SE‚Ì‰¹—Ê‚ğæ“¾‚·‚é
+    /// </summary>
+    public float GetSEVolume { get { return volumeSE; } }
+    /// <summary>
+    /// SE‚Ì‰¹—Ê‚ğİ’è‚·‚é
+    /// </summary>
+    public float SetSEVolume { set { volumeSE = value; } }
 }
