@@ -9,6 +9,7 @@ using System.Drawing;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 using NUnit.Framework.Constraints;
 using UnityEngine.Audio;
+using Unity.VisualScripting;
 
 public class PlayerController : MonoBehaviour
 {
@@ -37,6 +38,9 @@ public class PlayerController : MonoBehaviour
 
         //サウンドの初期化
         audioSource.clip = moveSE;
+
+        //プレイヤーコライダーの初期化
+        playerCollider2D = GetComponent<Collider2D>();
 
         //移動速度の初期化
         moveSpeed = defaultMoveSpeed;
@@ -74,17 +78,9 @@ public class PlayerController : MonoBehaviour
             RayWidth *= input;  //方向の向きの判定が行くようにする
         }
 
-            Vector2 StartPositionL = transform.position; //衝突判定の開始位置(プレイヤーの中心)
-        Vector2 StartPositionR = transform.position + new Vector3(RayWidth, 0, 0); //衝突判定の開始位置
-        int LayerObject = LayerMask.GetMask(GroundLayer);   //衝突判定をするレイヤー
-        UnityEngine.Color color = UnityEngine.Color.red;
-        Debug.DrawRay(StartPositionL, Vector2.down, color, RayDistance);
-        Debug.DrawRay(StartPositionR, Vector2.down, color, RayDistance);
-        RaycastHit2D HitObjectL = Physics2D.Raycast(StartPositionL, Vector2.down, RayDistance, LayerObject);    //下向きにして地面と接しているかどうか
-        RaycastHit2D HitObjectR = Physics2D.Raycast(StartPositionR, Vector2.down, RayDistance, LayerObject);    //下向きにして地面と接しているかどうか
-
+       
         //地面に接しているとき
-        if (HitObjectL || HitObjectR)
+        if (isColliding)
         {
             if (!isGround && state == State.FALL)
             {
@@ -106,7 +102,7 @@ public class PlayerController : MonoBehaviour
                 audioSource.clip = moveSE;  //SEを歩きにする
             }
             isGround = true; //上下に動いていない場合
-            if(isGround) moveSpeed = defaultMoveSpeed;   //移動速度を通常に戻す
+            if(isGround && rbody2D.velocity.y <= 0) moveSpeed = defaultMoveSpeed;   //移動速度を通常に戻す
             groundTime += Time.deltaTime;   //地面との接触時間の加算
             if (groundTime < jumpComboTime && jumpCount != 0) JumpGageImage.enabled = true;   //ゲージを表示
         }
@@ -128,23 +124,10 @@ public class PlayerController : MonoBehaviour
                 groundTime = 0; //地面と離れたら初期化
                 JumpGageImage.enabled = false;   //ゲージを非表示
             }
-            //静止(当たり判定のせいで端っこに立つと地面に触れていないのに地面の上に立てることがある)
-            else
-            {
-                if (state == State.FALL)
-                {
-                    state = State.LAND; //もし地面に接して1回目ならアニメーションを着地にする
-                    audioSource.PlayOneShot(landSE); //着地SE再生
-                }
-                groundTime += Time.deltaTime;   //地面との接触時間の加算
-                if (groundTime < jumpComboTime && jumpCount != 0) JumpGageImage.enabled = true;   //ゲージを表示
-                state = State.STOP;
-                isGround = true;
-            }
         }
 
         //地面についていて、3回ジャンプしていたら
-        if(isGround && jumpCount == 0 || groundTime > jumpComboTime)
+        if (isGround && rbody2D.velocity.y <= 0 && (jumpCount == 0 || groundTime > jumpComboTime))
         {
             for(int i = 0; i < JumpCountImage.Length; i++)
             {
@@ -183,15 +166,82 @@ public class PlayerController : MonoBehaviour
             // インターバル中
             timerAudio += Time.deltaTime;
         }
-
+        if (groundTime > jumpComboTime) jumpCount = 0;  //連続ジャンプではない場合は0
     }
-    
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (collision.gameObject.layer != LayerMask.NameToLayer(GroundLayer)) return;   //障害物のレイヤー以外なら終了
+        ContactPoint2D maxPoint = collision.contacts[0];    //一番高い衝突点
+        foreach (ContactPoint2D contact in collision.contacts)
+        {
+            //一番小さい衝突点を取得
+            if (maxPoint.point.y < contact.point.y)
+            {
+                maxPoint = contact;
+            }
+        }
+
+        float angle = Vector2.Angle(maxPoint.normal, Vector2.up); // 上方向との角度
+        //水平じゃないなら
+        if (angle != 90.0f && angle != 270.0f)
+        {
+            if (maxPoint.point.y <= transform.position.y)
+            {
+                isColliding = true;
+                return;
+            }
+
+        }
+        //ぶつかったコリジョンがプレイヤーよりも低い位置にいたら
+        if (collision.collider.bounds.max.y <= playerCollider2D.bounds.min.y)
+        {
+            isColliding = true;
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.layer != LayerMask.NameToLayer(GroundLayer)) return;   //障害物のレイヤー以外なら終了
+        ContactPoint2D maxPoint = collision.contacts[0];    //一番高い衝突点
+        foreach (ContactPoint2D contact in collision.contacts)
+        {
+            //一番小さい衝突点を取得
+            if (maxPoint.point.y < contact.point.y)
+            {
+                maxPoint = contact;
+            }
+        }
+
+        float angle = Vector2.Angle(maxPoint.normal, Vector2.up); // 上方向との角度
+        //水平じゃないなら
+        if (angle != 90.0f && angle != 270.0f)
+        {
+            if (maxPoint.point.y <= transform.position.y)
+            {
+                isColliding = true;
+                return;
+            }
+
+        }
+        //ぶつかったコリジョンがプレイヤーよりも低い位置にいたら
+        if (collision.collider.bounds.max.y <= playerCollider2D.bounds.min.y)
+        {
+            isColliding = true;
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.layer != LayerMask.NameToLayer(GroundLayer)) return;   //障害物のレイヤー以外なら終了
+        isColliding = false;
+    }
+
     void FixedUpdate()
     {
         //ジャンプ
         if (isJump && isGround)
         {
-            if (groundTime > jumpComboTime) jumpCount = 0;  //連続ジャンプではない場合は0
             rbody2D.velocity = new Vector2(rbody2D.velocity.x, 0);  //y軸の力を0にする
             float totalJumpMultiplier = (float)Math.Pow(jumpMultiplier, jumpCount); //ジャンプ力の倍率をジャンプの回数によって変える
             rbody2D.AddForce(Vector2.up * jumpPower * totalJumpMultiplier); //ジャンプ
@@ -323,17 +373,19 @@ public class PlayerController : MonoBehaviour
     }
 
 
+    private bool isColliding = false;   //コリジョンにぶつかった時
+    Collider2D playerCollider2D = null; //プレイヤーのコライダー
     Rigidbody2D rbody2D;  //rigidbody2dを取得
     private float input;    //プレイヤーの方向
     private State state = State.STOP;   //プレイヤーの現在の動き 
     private float moveSpeed = 0;
     [Header("移動速度")]
-    public float defaultMoveSpeed = 0.1f; //移動速度
-    public float jumpMoveSpeed = 0.2f;  //ジャンプ中の移動速度
+    public float defaultMoveSpeed = 0.08f; //移動速度
+    public float jumpMoveSpeed = 0.15f;  //ジャンプ中の移動速度
     [Header("ジャンプ")]
-    public float jumpPower = 300f;    //ジャンプ力
+    public float jumpPower = 350f;    //ジャンプ力
     public float jumpMultiplier = 1.2f;    //連続ジャンプ時のジャンプ力の倍率
-    public float jumpComboTime = 600;   //連続ジャンプの猶予時間
+    public float jumpComboTime = 1;   //連続ジャンプの猶予時間
     private int jumpCount = 0;  //連続ジャンプの回数
     private static int maxJumpCombo = 3;    //連続ジャンプの回数
     private bool isJump = false;    //ジャンプキー入力
