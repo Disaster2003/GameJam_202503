@@ -663,6 +663,7 @@ MonoBehaviour:
   floor: 0
   obstacles1: 11
   obstacles2: 0
+  breakClip: {fileID: 0}
   lateraSpeed: 0
   lateraRange: 0
   verticalSpeed: 4
@@ -691,7 +692,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3288098769097923824, guid: ac2b6f3dd6909f34790569462a56312a, type: 3}
       propertyPath: obstacles1
-      value: 8
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 3288098769097923824, guid: ac2b6f3dd6909f34790569462a56312a, type: 3}
+      propertyPath: lateraRange
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3288098769097923824, guid: ac2b6f3dd6909f34790569462a56312a, type: 3}
+      propertyPath: lateraSpeed
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3288098769097923824, guid: ac2b6f3dd6909f34790569462a56312a, type: 3}
       propertyPath: disappearTime
@@ -854,6 +863,7 @@ MonoBehaviour:
   floor: 0
   obstacles1: 0
   obstacles2: 0
+  breakClip: {fileID: 0}
   lateraSpeed: 0
   lateraRange: 2
   verticalSpeed: 0
