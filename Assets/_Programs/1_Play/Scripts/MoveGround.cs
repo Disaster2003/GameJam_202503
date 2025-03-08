@@ -41,9 +41,10 @@ public class MoveGround : MonoBehaviour
     [SerializeField, Header("縦移動の速さ(VerticalMovement)")] private float verticalSpeed;
     [SerializeField, Header("可動域　縦(VerticalMovement)")] private float verticalRange;
     [SerializeField, Header("回転の速さ(Rotate)")] private float rotateSpeed;
-    [SerializeField, Header("足場の消える時間(Time_disappear)")] private float timer;
+    [SerializeField, Header("足場の壊れる時間(Time_disappear)")] private float breakTime;
+    [SerializeField, Header("足場の消える時間(Time_disappear)")] private float disappearTime;
     [SerializeField, Header("足場の離れる回数(Exit_disappear_Cnt)")] private int exitCnt;
-    [SerializeField, Header("画像差し替え(disappear)")] private SpriteRenderer newRenderer;
+    [SerializeField, Header("画像差し替え(disappear)")] private Sprite newSprite;
     [SerializeField, Header("所定の座標(Target)")] private Transform[] targets;
     [SerializeField, Header("速さ(Attack)")] private float attackSpeed;
     [SerializeField, Header("プレイヤーの補正値(Attack)")] private float offset;
@@ -52,9 +53,7 @@ public class MoveGround : MonoBehaviour
 
     private int currentTargetIndex = 0; // 現在のターゲットインデックス
 
-    private SpriteRenderer SpriteRenderer;
-
-    private SpriteRenderer saveRenderer;
+    private Sprite saveSprite;
 
     /// <summary>
     /// プレイヤーのオブジェクト
@@ -130,10 +129,12 @@ public class MoveGround : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player");
         cam = Camera.main;
+
         if (cam != null)
         {
             width = GetCameraWidth(cam);
         }
+
 
         time = 0;
         isTime = false;
@@ -147,6 +148,7 @@ public class MoveGround : MonoBehaviour
         moveDirection = new Vector3(-1, 0, 0);
         collision2D = GetComponent<Collider2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        saveSprite = spriteRenderer.sprite;
     }
 
     // Update is called once per frame
@@ -160,6 +162,7 @@ public class MoveGround : MonoBehaviour
            || player.transform.position.y < (2 * ((floor - 1) * width)) + width)
         {
             collision2D.enabled = true;
+            spriteRenderer.sprite = saveSprite;
             spriteRenderer.enabled = true;
         }
     }
@@ -212,11 +215,11 @@ public class MoveGround : MonoBehaviour
                 RotateMove(obstacles);
                 break;
             case Obstacles.Time_disappear:
-                DisappearMove(obstacles, isTime);
+                DisappearMove(isTime);
                 break;
             case Obstacles.Exit_disappear:
             case Obstacles.Exit_disappear_Cnt:
-                DisappearMove(obstacles,isExit);
+                DisappearMove(isExit);
                 break;
             case Obstacles.Attack:
                 AttackMove();
@@ -393,32 +396,32 @@ public class MoveGround : MonoBehaviour
     /// disappear型の処理
     /// </summary>
     /// <param name="flag">対応するフラグ</param>
-    private void DisappearMove(Obstacles obstacles,bool flag)
+    private void DisappearMove(bool flag)
     {
-        if(obstacles == Obstacles.Exit_disappear_Cnt)
+        if(newSprite == null)
         {
-            if(flag && index == exitCnt)
-            {
-                collision2D.enabled = false;
-                spriteRenderer.enabled = false;
-                flag = false;
-                index = 0;
-            }
+            Debug.LogError("newSpriteはない");
         }
-        else
+        if (flag && time < 0 && spriteRenderer.sprite == newSprite)
         {
-            if(flag && time < 0)
-            {
-                collision2D.enabled = false;
-                spriteRenderer.enabled = false;
-                flag = false;
-            }
+            spriteRenderer.enabled = false;
+            flag = false;
         }
+        if (flag && time < 0 && index >= exitCnt)
+        {
+            spriteRenderer.sprite = newSprite;
+            collision2D.enabled = false;
+            time = breakTime;
+            Debug.Log("aa");
+            index = 0;
+            
+        }
+        
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        time = timer;
+        time = disappearTime;
         isTime = true;
         isExit = false;
         if (collision.gameObject.CompareTag("Player") && isTach)
@@ -430,6 +433,7 @@ public class MoveGround : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
+        time = 0;
         isExit = true;
         index++;
         if (collision.gameObject.CompareTag("Player") && isTach)
