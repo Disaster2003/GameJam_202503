@@ -7,7 +7,7 @@ public class DistanceToGoal : MonoBehaviour
 {
     [SerializeField] private GoalTrigger goalTrigger;
     [SerializeField] private Transform player;
-    [SerializeField] private TextMeshProUGUI GoalDistance;
+    //[SerializeField] private TextMeshProUGUI GoalDistance;
     [SerializeField, Header("ƒS[ƒ‹‚Ü‚Å‚Ì‹——£‚ğ‚‚³‚¾‚¯‘ª‚é")] private bool isHeightOnly = true;
     private Vector3 goalPos;
     private AltitudeDisplay altitudeDisplay;
@@ -22,7 +22,7 @@ public class DistanceToGoal : MonoBehaviour
 
     void Update()
     {
-        GoalDistance.text = "ƒS[ƒ‹‚Ü‚Å:" + CalculationDistance() + "m";
+        //GoalDistance.text = "ƒS[ƒ‹‚Ü‚Å:" + CalculationDistance() + "m";
     }
 
     int CalculationDistance()
