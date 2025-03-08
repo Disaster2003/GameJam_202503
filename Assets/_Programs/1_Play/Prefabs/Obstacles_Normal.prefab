@@ -104,8 +104,8 @@ MonoBehaviour:
   floor: 0
   obstacles1: 0
   obstacles2: 0
-  lateraSpeed: 0
-  lateraRange: 0
+  lateraSpeed: 1
+  lateraRange: 1
   verticalSpeed: 0
   verticalRange: 0
   rotateSpeed: 0
