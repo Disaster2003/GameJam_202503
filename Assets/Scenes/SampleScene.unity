@@ -1236,7 +1236,6 @@ CompositeCollider2D:
   m_OffsetDistance: 0.00005
   m_UseDelaunayMesh: 0
   m_CompositeGameObject: {fileID: 619381349}
-<<<<<<< HEAD
 --- !u!1 &735566029
 GameObject:
   m_ObjectHideFlags: 0
@@ -1518,8 +1517,6 @@ MonoBehaviour:
     image: {fileID: 103816869}
   - layer: 4
     image: {fileID: 1856378369}
-=======
->>>>>>> 112f13506de8db42498adb2e07ab8ac966213856
 --- !u!1 &1483975292
 GameObject:
   m_ObjectHideFlags: 0
@@ -1565,7 +1562,6 @@ Transform:
   - {fileID: 619381350}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-<<<<<<< HEAD
 --- !u!1 &1750848236
 GameObject:
   m_ObjectHideFlags: 0
@@ -1641,8 +1637,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1750848236}
   m_CullTransparentMesh: 1
-=======
->>>>>>> 112f13506de8db42498adb2e07ab8ac966213856
 --- !u!1 &1785490699
 GameObject:
   m_ObjectHideFlags: 0
