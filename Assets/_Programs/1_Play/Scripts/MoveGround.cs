@@ -238,15 +238,16 @@ public class MoveGround : MonoBehaviour
     /// </summary>
     private void LateralMove(Obstacles obstacles)
     {
+        float newX;
         if (obstacles == Obstacles.LateralMovementRight)
         {
-            float newX = Mathf.PingPong(Time.time * lateraSpeed, lateraRange * 2) - lateraRange;
+            newX = Mathf.PingPong(Time.time * lateraSpeed, lateraRange * 2) - lateraRange;
             transform.position = new Vector3(startPosition.x + newX, transform.position.y, transform.position.z);
         }
         else
         {
-            float newX = -Mathf.PingPong(Time.time * lateraSpeed, lateraRange * 2) - lateraRange;
-            transform.position = new Vector3(startPosition.x + newX, transform.position.y, transform.position.z);
+             newX = Mathf.PingPong(Time.time * lateraSpeed, lateraRange * 2) - lateraRange;
+            transform.position = new Vector3(startPosition.x - newX, transform.position.y, transform.position.z);
         }
     }
 
