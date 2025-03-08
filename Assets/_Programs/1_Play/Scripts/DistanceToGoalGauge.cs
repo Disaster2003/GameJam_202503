@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,10 +8,11 @@ using UnityEngine.UI;
 public class DistanceToGoalGauge : MonoBehaviour
 {
     [SerializeField] private RectTransform playerIcon;
-    [SerializeField] private float startPosX;
-    [SerializeField] private float startPosY;
-    [SerializeField] private float endPosY;
+    [SerializeField] private Image playerPosBar;
     private DistanceToGoal distanceToGoal;
+    private float startPosX;
+    private float startPosY;
+    private float endPosY;
     private float sliderValue;
 
     void Start()
@@ -40,6 +42,11 @@ public class DistanceToGoalGauge : MonoBehaviour
 
     void SetPlayerIcon()
     {
+        RectTransform barRect = playerPosBar.GetComponent<RectTransform>();
+        startPosX = (barRect.localPosition.x + (playerIcon.rect.width/2));
+        startPosY = (barRect.localPosition.y - (barRect.rect.height / 2));
+        endPosY = (startPosY + (barRect.rect.height));
+
         playerIcon.anchoredPosition = new Vector2(startPosX, startPosY);
     }
 }
