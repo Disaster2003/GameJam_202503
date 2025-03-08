@@ -30,7 +30,7 @@ public class MoveGround : MonoBehaviour
         Penetration,
     }
 
-    [SerializeField, Header("プレイヤーのポジション")] private GameObject player;
+    //[SerializeField, Header("プレイヤーのポジション")] private GameObject player;
     [SerializeField, Header("階層")] private float floor;
 
     [SerializeField, Header("障害物の種類")] private Obstacles obstacles1;
@@ -41,8 +41,10 @@ public class MoveGround : MonoBehaviour
     [SerializeField, Header("縦移動の速さ(VerticalMovement)")] private float verticalSpeed;
     [SerializeField, Header("可動域　縦(VerticalMovement)")] private float verticalRange;
     [SerializeField, Header("回転の速さ(Rotate)")] private float rotateSpeed;
-    [SerializeField, Header("足場の消える時間(Time_disappear)")] private float timer;
+    [SerializeField, Header("足場の壊れる時間(disappear)")] private float breakTime;
+    [SerializeField, Header("足場の消える時間(disappear)")] private float disappearTime;
     [SerializeField, Header("足場の離れる回数(Exit_disappear_Cnt)")] private int exitCnt;
+    [SerializeField, Header("画像差し替え(disappear)")] private Sprite newSprite;
     [SerializeField, Header("所定の座標(Target)")] private Transform[] targets;
     [SerializeField, Header("速さ(Attack)")] private float attackSpeed;
     [SerializeField, Header("プレイヤーの補正値(Attack)")] private float offset;
@@ -51,6 +53,17 @@ public class MoveGround : MonoBehaviour
 
     private int currentTargetIndex = 0; // 現在のターゲットインデックス
 
+    private Sprite saveSprite;
+
+    /// <summary>
+    /// プレイヤーのオブジェクト
+    /// </summary>
+    private GameObject player;
+
+    /// <summary>
+    /// playerの画像の縦幅
+    /// </summary>
+    float playerWidth;
 
     /// <summary>
     /// カメラ
@@ -119,11 +132,15 @@ public class MoveGround : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        player = GameObject.FindGameObjectWithTag("Player");
         cam = Camera.main;
+
         if (cam != null)
         {
             width = GetCameraWidth(cam);
         }
+
+        playerWidth = player.GetComponent<Collider2D>().bounds.size.y / 2;
 
         time = 0;
         isTime = false;
@@ -137,6 +154,7 @@ public class MoveGround : MonoBehaviour
         moveDirection = new Vector3(-1, 0, 0);
         collision2D = GetComponent<Collider2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        saveSprite = spriteRenderer.sprite;
     }
 
     // Update is called once per frame
@@ -146,10 +164,20 @@ public class MoveGround : MonoBehaviour
         SetObstacles(obstacles1);
         SetObstacles(obstacles2);
 
+        if (transform.position.y <= player.transform.position.y - playerWidth)
+        {
+            isPenetration = true;
+        }
+        else if (transform.position.y >= player.transform.position.y)
+        {
+            isPenetration = false;
+        }
+
         if (player.transform.position.y > width + (2 * (floor * width))
            || player.transform.position.y < (2 * ((floor - 1) * width)) + width)
         {
             collision2D.enabled = true;
+            spriteRenderer.sprite = saveSprite;
             spriteRenderer.enabled = true;
         }
     }
@@ -202,11 +230,11 @@ public class MoveGround : MonoBehaviour
                 RotateMove(obstacles);
                 break;
             case Obstacles.Time_disappear:
-                DisappearMove(obstacles, isTime);
+                DisappearMove(ref isTime);
                 break;
             case Obstacles.Exit_disappear:
             case Obstacles.Exit_disappear_Cnt:
-                DisappearMove(obstacles,isExit);
+                DisappearMove(ref isExit);
                 break;
             case Obstacles.Attack:
                 AttackMove();
@@ -225,15 +253,16 @@ public class MoveGround : MonoBehaviour
     /// </summary>
     private void LateralMove(Obstacles obstacles)
     {
+        float newX;
         if (obstacles == Obstacles.LateralMovementRight)
         {
-            float newX = Mathf.PingPong(Time.time * lateraSpeed, lateraRange * 2) - lateraRange;
+            newX = Mathf.PingPong(Time.time * lateraSpeed, lateraRange * 2) - lateraRange;
             transform.position = new Vector3(startPosition.x + newX, transform.position.y, transform.position.z);
         }
         else
         {
-            float newX = -Mathf.PingPong(Time.time * lateraSpeed, lateraRange * 2) - lateraRange;
-            transform.position = new Vector3(startPosition.x + newX, transform.position.y, transform.position.z);
+             newX = Mathf.PingPong(Time.time * lateraSpeed, lateraRange * 2) - lateraRange;
+            transform.position = new Vector3(startPosition.x - newX, transform.position.y, transform.position.z);
         }
     }
 
@@ -359,16 +388,6 @@ public class MoveGround : MonoBehaviour
     }
     private void PenetrationMove()
     {
-        float playerWidth = player.GetComponent<PolygonCollider2D>().bounds.size.y / 2;
-        if (transform.position.y <= player.transform.position.y - playerWidth)
-        {
-            isPenetration = true;
-        }
-        else if(transform.position.y >= player.transform.position.y)
-        {
-            isPenetration = false;
-        }
-
         if(isPenetration)
         {
             collision2D.enabled = true;
@@ -383,49 +402,57 @@ public class MoveGround : MonoBehaviour
     /// disappear型の処理
     /// </summary>
     /// <param name="flag">対応するフラグ</param>
-    private void DisappearMove(Obstacles obstacles,bool flag)
+    private void DisappearMove(ref bool flag)
     {
-        if(obstacles == Obstacles.Exit_disappear_Cnt)
+        
+        if(newSprite == null)
         {
-            if(flag && index == exitCnt)
-            {
-                collision2D.enabled = false;
-                spriteRenderer.enabled = false;
-                flag = false;
-                index = 0;
-            }
+            Debug.LogError("newSpriteはない");
         }
-        else
+        if (flag && time < 0 && spriteRenderer.sprite == newSprite)
         {
-            if(flag && time < 0)
-            {
-                collision2D.enabled = false;
-                spriteRenderer.enabled = false;
-                flag = false;
-            }
+            spriteRenderer.enabled = false;
+            spriteRenderer.sprite = saveSprite;
+            flag = false;
         }
+        else if (flag && time < 0 && index >= exitCnt)
+        {
+            spriteRenderer.sprite = newSprite;
+            collision2D.enabled = false;
+            time = breakTime;
+            index = 0;
+            
+        }
+        
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        time = timer;
-        isTime = true;
-        isExit = false;
-        if (collision.gameObject.CompareTag("Player") && isTach)
+        if (isPenetration)
         {
-            // 触れたobjの親を移動床にする
-            collision.transform.SetParent(transform);
+            time = disappearTime;
+            isTime = true;
+            isExit = false;
+            if (collision.gameObject.CompareTag("Player") && isTach)
+            {
+                // 触れたobjの親を移動床にする
+                collision.transform.SetParent(transform);
+            }
         }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        isExit = true;
-        index++;
-        if (collision.gameObject.CompareTag("Player") && isTach)
+        if (isPenetration)
         {
-            // 触れたobjの親を移動床にする
-            collision.transform.SetParent(null);
+            time = 0;
+            isExit = true;
+            index++;
+            if (collision.gameObject.CompareTag("Player") && isTach)
+            {
+                // 触れたobjの親を移動床にする
+                collision.transform.SetParent(null);
+            }
         }
     }
 }
