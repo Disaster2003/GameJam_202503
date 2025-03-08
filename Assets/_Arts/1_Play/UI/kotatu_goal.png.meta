@@ -130,7 +130,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      kotatu_goal_0: -3867152254770916519
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
