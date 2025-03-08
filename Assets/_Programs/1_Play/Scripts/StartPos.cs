@@ -6,7 +6,7 @@ public class StartPos : MonoBehaviour
 {
     [SerializeField] private GameObject player;
 
-    void Start()
+    void Awake()
     {
         //オブジェクトの位置をプレイヤーの開始地点に設定
         player.transform.position = transform.position;

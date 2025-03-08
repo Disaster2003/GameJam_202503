@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -34,6 +35,7 @@ public class DistanceToGoalGauge : MonoBehaviour
     void UpdatePlayerIcon(float distance)
     {
         float maxDistance = distanceToGoal.GetMaxDistance();
+        Debug.Log(maxDistance);
         sliderValue = Mathf.InverseLerp(maxDistance, 0, distance);
 
         float playerIconPosY = Mathf.Lerp(startPosY+offsetStartPosY, endPosY+offsetEndPosY, sliderValue);

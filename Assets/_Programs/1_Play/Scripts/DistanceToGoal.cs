@@ -22,6 +22,7 @@ public class DistanceToGoal : MonoBehaviour
 
     void Update()
     {
+        CalculationDistance();
         //GoalDistance.text = "ÉSÅ[ÉãÇ‹Ç≈:" + CalculationDistance() + "m";
     }
 
