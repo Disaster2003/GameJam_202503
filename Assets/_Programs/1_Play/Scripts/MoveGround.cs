@@ -405,6 +405,7 @@ public class MoveGround : MonoBehaviour
         if (flag && time < 0 && spriteRenderer.sprite == newSprite)
         {
             spriteRenderer.enabled = false;
+            spriteRenderer.sprite = saveSprite;
             flag = false;
         }
         if (flag && time < 0 && index >= exitCnt)
