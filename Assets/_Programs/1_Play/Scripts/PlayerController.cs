@@ -29,7 +29,8 @@ public class PlayerController : MonoBehaviour
         spriteRenderer.sprite = spritesWalk[0];
 
         //ジャンプカウント初期化
-        for (int i = 0; i < JumpCountImage.Length; i++)
+        JumpCountImage[0].enabled = true;
+        for (int i = 1; i < JumpCountImage.Length; i++)
         {
             JumpCountImage[i].enabled = false;  //全て非表示にする
         }
@@ -104,7 +105,7 @@ public class PlayerController : MonoBehaviour
                 state = State.WALK; //アニメーションを歩きにする
                 audioSource.clip = moveSE;  //SEを歩きにする
             }
-            if(rbody2D.velocity.y == 0)isGround = true; //上下に動いていない場合
+            isGround = true; //上下に動いていない場合
             if(isGround) moveSpeed = defaultMoveSpeed;   //移動速度を通常に戻す
             groundTime += Time.deltaTime;   //地面との接触時間の加算
             if (groundTime < jumpComboTime && jumpCount != 0) JumpGageImage.enabled = true;   //ゲージを表示
@@ -117,21 +118,38 @@ public class PlayerController : MonoBehaviour
             if (rbody2D.velocity.y > 0)
             {
                 state = State.JUMP; //アニメーションをジャンプにする
+                groundTime = 0; //地面と離れたら初期化
+                JumpGageImage.enabled = false;   //ゲージを非表示
             }
             //下降
             else if (rbody2D.velocity.y < 0)
             {
                 state = State.FALL; //アニメーションを落下にする
+                groundTime = 0; //地面と離れたら初期化
+                JumpGageImage.enabled = false;   //ゲージを非表示
             }
             //静止(当たり判定のせいで端っこに立つと地面に触れていないのに地面の上に立てることがある)
             else
             {
+                if (state == State.FALL)
+                {
+                    state = State.LAND; //もし地面に接して1回目ならアニメーションを着地にする
+                    audioSource.PlayOneShot(landSE); //着地SE再生
+                }
+                groundTime += Time.deltaTime;   //地面との接触時間の加算
+                if (groundTime < jumpComboTime && jumpCount != 0) JumpGageImage.enabled = true;   //ゲージを表示
                 state = State.STOP;
                 isGround = true;
             }
+        }
 
-            groundTime = 0; //地面と離れたら初期化
-            JumpGageImage.enabled = false;   //ゲージを非表示
+        //地面についていて、3回ジャンプしていたら
+        if(isGround && jumpCount == 0 || groundTime > jumpComboTime)
+        {
+            for(int i = 0; i < JumpCountImage.Length; i++)
+            {
+                JumpCountImage[i].enabled = false;
+            }
         }
 
         //アニメーション・SE差分
@@ -165,6 +183,7 @@ public class PlayerController : MonoBehaviour
             // インターバル中
             timerAudio += Time.deltaTime;
         }
+
     }
     
     void FixedUpdate()
@@ -173,6 +192,7 @@ public class PlayerController : MonoBehaviour
         if (isJump && isGround)
         {
             if (groundTime > jumpComboTime) jumpCount = 0;  //連続ジャンプではない場合は0
+            rbody2D.velocity = new Vector2(rbody2D.velocity.x, 0);  //y軸の力を0にする
             float totalJumpMultiplier = (float)Math.Pow(jumpMultiplier, jumpCount); //ジャンプ力の倍率をジャンプの回数によって変える
             rbody2D.AddForce(Vector2.up * jumpPower * totalJumpMultiplier); //ジャンプ
             if(jumpCount == 2) moveSpeed = jumpMoveSpeed;  //移動速度をジャンプ中の速度に変更
@@ -182,15 +202,17 @@ public class PlayerController : MonoBehaviour
             tempAudioSource.PlayOneShot(jumpSE);    // 音を再生
             Destroy(tempAudioSource, jumpSE.length);  // 音の長さ分後に削除
 
-            //1回目のジャンプ
-            if (jumpCount == 0)
-            {
-                for (int i = 0; i < JumpCountImage.Length; i++)
-                {
-                    JumpCountImage[i].enabled = false;  //全て非表示にする
-                }
-            }
-            JumpCountImage[jumpCount].enabled = true;   //回数を表示
+
+            //ジャンプカウントの表示
+            //1つ目
+            if (jumpCount >= 0) JumpCountImage[0].enabled = true;
+            else JumpCountImage[0].enabled = false;
+            //2つ目
+            if (jumpCount >= 1) JumpCountImage[1].enabled = true;
+            else JumpCountImage[1].enabled = false;
+            //3つ目
+            if (jumpCount >= 2) JumpCountImage[2].enabled = true;
+            else JumpCountImage[2].enabled = false; 
 
             jumpCount++;    //ジャンプ回数を増やす
             jumpCount %= maxJumpCombo; //最大連続ジャンプの回数で割ったあまりを取ることで連続ジャンプが最大以上に発生しないようにする
@@ -201,6 +223,8 @@ public class PlayerController : MonoBehaviour
         {
             transform.position -= new Vector3(moveSpeed, 0, 0);
             transform.eulerAngles = new Vector3(0, 180, 0);
+            //プレイヤー以外の回転を直す
+
             timerAudio = 0f;
         }
         // 右に移動
@@ -212,6 +236,7 @@ public class PlayerController : MonoBehaviour
         }
         input = Input.GetAxisRaw("Horizontal"); //方向を取得
     }
+
 
     /// <summary>
     /// nullチェック
