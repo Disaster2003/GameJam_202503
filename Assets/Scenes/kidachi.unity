@@ -2141,9 +2141,21 @@ PrefabInstance:
       value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 5502215117506153831, guid: 1c4cb9cb1a724f04cbea2a5c3085c9dd, type: 3}
+      propertyPath: spritesWalk.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5502215117506153831, guid: 1c4cb9cb1a724f04cbea2a5c3085c9dd, type: 3}
       propertyPath: spritesLanded.Array.size
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 5502215117506153831, guid: 1c4cb9cb1a724f04cbea2a5c3085c9dd, type: 3}
+      propertyPath: 'spritesWalk.Array.data[3]'
+      value: 
+      objectReference: {fileID: 9104348463550422359, guid: ee5846f2f04cda240b7c114c869a51f4, type: 3}
+    - target: {fileID: 5502215117506153831, guid: 1c4cb9cb1a724f04cbea2a5c3085c9dd, type: 3}
+      propertyPath: 'spritesWalk.Array.data[4]'
+      value: 
+      objectReference: {fileID: 8725583791009165418, guid: 5845f27a24006ac47a76d1974502b377, type: 3}
     - target: {fileID: 5502215117506153831, guid: 1c4cb9cb1a724f04cbea2a5c3085c9dd, type: 3}
       propertyPath: 'spritesLanded.Array.data[0]'
       value: 

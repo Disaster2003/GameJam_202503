@@ -589,8 +589,6 @@ MonoBehaviour:
   jumpMultiplier: 1.2
   jumpComboTime: 1
   GroundLayer: Block
-  RayDistance: 0.5
-  RayWidth: 0.3
   JumpGageImage: {fileID: 413448431320585688}
   JumpCountImage:
   - {fileID: 9061282862595397247}
@@ -602,10 +600,6 @@ MonoBehaviour:
   - {fileID: 8725583791009165418, guid: 5845f27a24006ac47a76d1974502b377, type: 3}
   - {fileID: 9104348463550422359, guid: ee5846f2f04cda240b7c114c869a51f4, type: 3}
   - {fileID: 3169686970940401675, guid: 4b08922384f84c049ab828c1dd0c9843, type: 3}
-  spritesRun:
-  - {fileID: 2839316697585857279, guid: 4c34f892f92f34b489855525b8c78762, type: 3}
-  - {fileID: 3542503189255554220, guid: 37e25009bf73e594a8c1bc5709ff1876, type: 3}
-  - {fileID: 2116413181458396126, guid: be0ec944705f20e4196a97e17dd74f28, type: 3}
   spritesJump:
   - {fileID: -3937395983013798283, guid: 5ad8252a1db54e2418f2795b4c950970, type: 3}
   spritesFall:
