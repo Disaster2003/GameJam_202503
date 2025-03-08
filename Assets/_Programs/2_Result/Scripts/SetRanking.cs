@@ -127,7 +127,7 @@ public class SetRanking : MonoBehaviour
             txtRanks[idx].text = FormatTime(ranks[idx + 1]);
 
             // ランクインしたら、その箇所だけ色変更
-            if (idx + 1 == newRank) txtRanks[idx].color = Color.yellow;
+            if (idx + 1 == newRank) txtRanks[idx].color = Color.red;
         }
     }
 
