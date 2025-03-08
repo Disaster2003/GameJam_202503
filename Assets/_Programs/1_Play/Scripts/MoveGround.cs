@@ -41,8 +41,8 @@ public class MoveGround : MonoBehaviour
     [SerializeField, Header("縦移動の速さ(VerticalMovement)")] private float verticalSpeed;
     [SerializeField, Header("可動域　縦(VerticalMovement)")] private float verticalRange;
     [SerializeField, Header("回転の速さ(Rotate)")] private float rotateSpeed;
-    [SerializeField, Header("足場の壊れる時間(Time_disappear)")] private float breakTime;
-    [SerializeField, Header("足場の消える時間(Time_disappear)")] private float disappearTime;
+    [SerializeField, Header("足場の壊れる時間(disappear)")] private float breakTime;
+    [SerializeField, Header("足場の消える時間(disappear)")] private float disappearTime;
     [SerializeField, Header("足場の離れる回数(Exit_disappear_Cnt)")] private int exitCnt;
     [SerializeField, Header("画像差し替え(disappear)")] private Sprite newSprite;
     [SerializeField, Header("所定の座標(Target)")] private Transform[] targets;
@@ -59,6 +59,11 @@ public class MoveGround : MonoBehaviour
     /// プレイヤーのオブジェクト
     /// </summary>
     private GameObject player;
+
+    /// <summary>
+    /// playerの画像の縦幅
+    /// </summary>
+    float playerWidth;
 
     /// <summary>
     /// カメラ
@@ -135,6 +140,7 @@ public class MoveGround : MonoBehaviour
             width = GetCameraWidth(cam);
         }
 
+        playerWidth = player.GetComponent<Collider2D>().bounds.size.y / 2;
 
         time = 0;
         isTime = false;
@@ -157,6 +163,15 @@ public class MoveGround : MonoBehaviour
         time -= Time.deltaTime;
         SetObstacles(obstacles1);
         SetObstacles(obstacles2);
+
+        if (transform.position.y <= player.transform.position.y - playerWidth)
+        {
+            isPenetration = true;
+        }
+        else if (transform.position.y >= player.transform.position.y)
+        {
+            isPenetration = false;
+        }
 
         if (player.transform.position.y > width + (2 * (floor * width))
            || player.transform.position.y < (2 * ((floor - 1) * width)) + width)
@@ -373,16 +388,6 @@ public class MoveGround : MonoBehaviour
     }
     private void PenetrationMove()
     {
-        float playerWidth = player.GetComponent<PolygonCollider2D>().bounds.size.y / 2;
-        if (transform.position.y <= player.transform.position.y - playerWidth)
-        {
-            isPenetration = true;
-        }
-        else if(transform.position.y >= player.transform.position.y)
-        {
-            isPenetration = false;
-        }
-
         if(isPenetration)
         {
             collision2D.enabled = true;
@@ -423,25 +428,31 @@ public class MoveGround : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        time = disappearTime;
-        isTime = true;
-        isExit = false;
-        if (collision.gameObject.CompareTag("Player") && isTach)
+        if (isPenetration)
         {
-            // 触れたobjの親を移動床にする
-            collision.transform.SetParent(transform);
+            time = disappearTime;
+            isTime = true;
+            isExit = false;
+            if (collision.gameObject.CompareTag("Player") && isTach)
+            {
+                // 触れたobjの親を移動床にする
+                collision.transform.SetParent(transform);
+            }
         }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        time = 0;
-        isExit = true;
-        index++;
-        if (collision.gameObject.CompareTag("Player") && isTach)
+        if (isPenetration)
         {
-            // 触れたobjの親を移動床にする
-            collision.transform.SetParent(null);
+            time = 0;
+            isExit = true;
+            index++;
+            if (collision.gameObject.CompareTag("Player") && isTach)
+            {
+                // 触れたobjの親を移動床にする
+                collision.transform.SetParent(null);
+            }
         }
     }
 }
