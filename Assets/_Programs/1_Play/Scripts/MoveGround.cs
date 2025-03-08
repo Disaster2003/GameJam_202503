@@ -215,11 +215,11 @@ public class MoveGround : MonoBehaviour
                 RotateMove(obstacles);
                 break;
             case Obstacles.Time_disappear:
-                DisappearMove(isTime);
+                DisappearMove(ref isTime);
                 break;
             case Obstacles.Exit_disappear:
             case Obstacles.Exit_disappear_Cnt:
-                DisappearMove(isExit);
+                DisappearMove(ref isExit);
                 break;
             case Obstacles.Attack:
                 AttackMove();
@@ -396,8 +396,9 @@ public class MoveGround : MonoBehaviour
     /// disappear型の処理
     /// </summary>
     /// <param name="flag">対応するフラグ</param>
-    private void DisappearMove(bool flag)
+    private void DisappearMove(ref bool flag)
     {
+        
         if(newSprite == null)
         {
             Debug.LogError("newSpriteはない");
@@ -408,12 +409,11 @@ public class MoveGround : MonoBehaviour
             spriteRenderer.sprite = saveSprite;
             flag = false;
         }
-        if (flag && time < 0 && index >= exitCnt)
+        else if (flag && time < 0 && index >= exitCnt)
         {
             spriteRenderer.sprite = newSprite;
             collision2D.enabled = false;
             time = breakTime;
-            Debug.Log("aa");
             index = 0;
             
         }
