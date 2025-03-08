@@ -36,6 +36,8 @@ public class MoveGround : MonoBehaviour
     [SerializeField, Header("障害物の種類")] private Obstacles obstacles1;
     [SerializeField, Header("障害物の種類")] private Obstacles obstacles2;
 
+    [SerializeField, Header("壊れる音(disappear)")] private AudioClip breakClip;
+
     [SerializeField, Header("横移動の速さ(LateralMovement)")] private float lateraSpeed;
     [SerializeField, Header("可動域　横(LateralMovementRight)")] private float lateraRange;
     [SerializeField, Header("縦移動の速さ(VerticalMovement)")] private float verticalSpeed;
@@ -53,7 +55,15 @@ public class MoveGround : MonoBehaviour
 
     private int currentTargetIndex = 0; // 現在のターゲットインデックス
 
+    /// <summary>
+    /// 元の画像保存
+    /// </summary>
     private Sprite saveSprite;
+
+    /// <summary>
+    /// 音源出す
+    /// </summary>
+    private AudioSource audioSource;
 
     /// <summary>
     /// プレイヤーのオブジェクト
@@ -155,6 +165,7 @@ public class MoveGround : MonoBehaviour
         collision2D = GetComponent<Collider2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         saveSprite = spriteRenderer.sprite;
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -421,6 +432,7 @@ public class MoveGround : MonoBehaviour
             collision2D.enabled = false;
             time = breakTime;
             index = 0;
+            audioSource.PlayOneShot(breakClip);
             
         }
         
