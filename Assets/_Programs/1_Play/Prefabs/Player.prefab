@@ -583,9 +583,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d2bd3174fcb315479cf5f71211e4f04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultMoveSpeed: 0.1
-  jumpMoveSpeed: 0.2
-  jumpPower: 300
+  defaultMoveSpeed: 0.08
+  jumpMoveSpeed: 0.15
+  jumpPower: 350
   jumpMultiplier: 1.2
   jumpComboTime: 1
   GroundLayer: Block
@@ -619,8 +619,8 @@ MonoBehaviour:
   moveSE: {fileID: 8300000, guid: 8d73d9e7b7fcc7641a40ec724e29f758, type: 3}
   jumpSE: {fileID: 8300000, guid: 5e22f913633691b4b87ca0e45a9dc84c, type: 3}
   landSE: {fileID: 8300000, guid: 303fdc9af74d47049a085cf3ab14e9d9, type: 3}
-  defaultPitch: 1
-  pitchMultiplier: 0
+  defaultPitch: 2
+  pitchMultiplier: 0.5
 --- !u!50 &8193548339283739881
 Rigidbody2D:
   serializedVersion: 4
