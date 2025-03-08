@@ -244,6 +244,7 @@ public class PlayerController : MonoBehaviour
             jumpCount++;    //ジャンプ回数を増やす
             jumpCount %= maxJumpCombo; //最大連続ジャンプの回数で割ったあまりを取ることで連続ジャンプが最大以上に発生しないようにする
             isJump = false; //ジャンプの入力を解除
+            groundTime = 0; //地面と離れたら初期化
         }
         // 左に移動
         if (Input.GetKey(KeyCode.A))
