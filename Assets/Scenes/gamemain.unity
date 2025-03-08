@@ -8143,7 +8143,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 8e4b00007b5933b4b9036dbf8a1df8c9, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -8406,6 +8406,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 5502215117506153831, guid: 1c4cb9cb1a724f04cbea2a5c3085c9dd, type: 3}
+      propertyPath: jumpSE
+      value: 
+      objectReference: {fileID: 8300000, guid: 5e22f913633691b4b87ca0e45a9dc84c, type: 3}
+    - target: {fileID: 5502215117506153831, guid: 1c4cb9cb1a724f04cbea2a5c3085c9dd, type: 3}
       propertyPath: jumpPower
       value: 350
       objectReference: {fileID: 0}
@@ -8431,11 +8435,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7727567833306177954, guid: 1c4cb9cb1a724f04cbea2a5c3085c9dd, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 7.8
+      value: -6
       objectReference: {fileID: 0}
     - target: {fileID: 7727567833306177954, guid: 1c4cb9cb1a724f04cbea2a5c3085c9dd, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 72.11
+      value: 40.2
       objectReference: {fileID: 0}
     - target: {fileID: 7727567833306177954, guid: 1c4cb9cb1a724f04cbea2a5c3085c9dd, type: 3}
       propertyPath: m_LocalPosition.z
