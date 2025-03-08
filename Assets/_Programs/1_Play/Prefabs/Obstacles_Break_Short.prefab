@@ -112,7 +112,7 @@ MonoBehaviour:
   breakTime: 0
   disappearTime: 0
   exitCnt: 0
-  newSprite: {fileID: -5550635897433848684, guid: 0ecc2c18069235d4492a918cd334c49f, type: 3}
+  newSprite: {fileID: 21300000, guid: d47dc16c054d1ac4093a0cafbcdf3fc9, type: 3}
   targets:
   - {fileID: 0}
   - {fileID: 0}
