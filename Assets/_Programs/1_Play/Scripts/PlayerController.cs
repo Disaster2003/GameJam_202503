@@ -1,23 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
-using UnityEngine.UI;
 using System;
-using static UnityEngine.UI.Image;
-using System.Drawing;
-using static UnityEngine.RuleTile.TilingRuleOutput;
-using NUnit.Framework.Constraints;
-using UnityEngine.Audio;
-using Unity.VisualScripting;
 
 public class PlayerController : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()
     {
-        rbody2D = GetComponent<Rigidbody2D>();
         // コンポーネントの取得
+        rbody2D = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         audioSource = GetComponent<AudioSource>();
 
@@ -70,14 +60,6 @@ public class PlayerController : MonoBehaviour
             isJump = true;
             return;
         }
-
-        //もしプレイヤーが止まっていなければ
-        if (input != 0)
-        {
-            if (RayWidth < 0) RayWidth *= -1;   //レイの幅を元に戻す
-            RayWidth *= input;  //方向の向きの判定が行くようにする
-        }
-
        
         //地面に接しているとき
         if (isColliding)
@@ -109,21 +91,19 @@ public class PlayerController : MonoBehaviour
         //地面に接していないとき
         else
         {
-            isGround = false;
             //上昇
             if (rbody2D.velocity.y > 0)
             {
                 state = State.JUMP; //アニメーションをジャンプにする
-                groundTime = 0; //地面と離れたら初期化
-                JumpGageImage.enabled = false;   //ゲージを非表示
             }
             //下降
             else if (rbody2D.velocity.y < 0)
             {
                 state = State.FALL; //アニメーションを落下にする
-                groundTime = 0; //地面と離れたら初期化
-                JumpGageImage.enabled = false;   //ゲージを非表示
             }
+            isGround = false;
+            groundTime = 0; //地面と離れたら初期化
+            JumpGageImage.enabled = false;   //ゲージを非表示
         }
 
         //地面についていて、3回ジャンプしていたら
@@ -145,9 +125,6 @@ public class PlayerController : MonoBehaviour
             case State.WALK:
                 Animation(spritesWalk);
                 PlaySE(moveSE); //歩きSE再生
-                break;
-            case State.RUN:
-                Animation(spritesRun);
                 break;
             case State.JUMP:
                 Animation(spritesJump);
@@ -266,15 +243,13 @@ public class PlayerController : MonoBehaviour
 
             jumpCount++;    //ジャンプ回数を増やす
             jumpCount %= maxJumpCombo; //最大連続ジャンプの回数で割ったあまりを取ることで連続ジャンプが最大以上に発生しないようにする
-            isJump = false;
+            isJump = false; //ジャンプの入力を解除
         }
         // 左に移動
         if (Input.GetKey(KeyCode.A))
         {
             transform.position -= new Vector3(moveSpeed, 0, 0);
             transform.eulerAngles = new Vector3(0, 180, 0);
-            //プレイヤー以外の回転を直す
-
             timerAudio = 0f;
         }
         // 右に移動
@@ -366,10 +341,9 @@ public class PlayerController : MonoBehaviour
     {
         STOP = 0,   //待機
         WALK = 1,   //歩き
-        RUN = 2,    //走り
-        JUMP = 3,   //ジャンプ
-        FALL = 4,   //落下
-        LAND = 5, //着地
+        JUMP = 2,   //ジャンプ
+        FALL = 3,   //落下
+        LAND = 4, //着地
     }
 
 
@@ -391,8 +365,6 @@ public class PlayerController : MonoBehaviour
     private bool isJump = false;    //ジャンプキー入力
     [Header("地面の判定")]
     public string GroundLayer = "Block"; //地面の判定をするレイヤー
-    public float RayDistance = 0.5f;    //レイの長さ
-    public float RayWidth = 0.3f;   //レイの幅
     private float groundTime = 0;   //地面と接触している時間
     private bool isGround  = false; //地面と接触しているかどうか
 
@@ -403,7 +375,6 @@ public class PlayerController : MonoBehaviour
     [Header("アニメーション画像")]
     [SerializeField] private Sprite[] spritesStop;
     [SerializeField] private Sprite[] spritesWalk;
-    [SerializeField] private Sprite[] spritesRun;
     [SerializeField] private Sprite[] spritesJump;
     [SerializeField] private Sprite[] spritesFall;
     [SerializeField] private Sprite[] spritesLanded;
