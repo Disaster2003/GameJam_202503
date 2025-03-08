@@ -119,8 +119,8 @@ TextureImporter:
       name: ranking_board_0
       rect:
         serializedVersion: 2
-        x: 80
-        y: 21
+        x: 90
+        y: 20
         width: 633
         height: 763
       alignment: 0
@@ -140,8 +140,8 @@ TextureImporter:
       name: ranking_board_1
       rect:
         serializedVersion: 2
-        x: 336
-        y: 29
+        x: 346
+        y: 28
         width: 6
         height: 6
       alignment: 0
