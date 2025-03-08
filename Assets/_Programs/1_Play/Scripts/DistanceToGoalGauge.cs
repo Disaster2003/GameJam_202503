@@ -9,6 +9,8 @@ public class DistanceToGoalGauge : MonoBehaviour
 {
     [SerializeField] private RectTransform playerIcon;
     [SerializeField] private Image playerPosBar;
+    [SerializeField, Header("アイコンの位置調整用")] private float offsetStartPosY;
+    [SerializeField] private float offsetEndPosY;
     private DistanceToGoal distanceToGoal;
     private float startPosX;
     private float startPosY;
@@ -34,7 +36,7 @@ public class DistanceToGoalGauge : MonoBehaviour
         float maxDistance = distanceToGoal.GetMaxDistance();
         sliderValue = Mathf.InverseLerp(maxDistance, 0, distance);
 
-        float playerIconPosY = startPosY + (endPosY * (sliderValue*2));
+        float playerIconPosY = Mathf.Lerp(startPosY+offsetStartPosY, endPosY+offsetEndPosY, sliderValue);
 
         // anchoredPosition でUIの座標を変更
         playerIcon.anchoredPosition = new Vector2(startPosX, playerIconPosY);
