@@ -130,7 +130,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      asiba_seihoukei_broken_003_0: 7285168052816045110
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
