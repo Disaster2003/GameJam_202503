@@ -498,9 +498,6 @@ TilemapRenderer:
   m_Mode: 0
   m_DetectChunkCullingBounds: 0
   m_MaskInteraction: 0
-<<<<<<< HEAD:Assets/_Map/MapPalette/Map Palette.prefab
---- !u!114 &4835443756578770591
-=======
 --- !u!1001 &159441831483474948
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -568,7 +565,6 @@ Transform:
   m_PrefabInstance: {fileID: 159441831483474948}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &6192369885313410555
->>>>>>> 112f13506de8db42498adb2e07ab8ac966213856:Assets/_Map/Map Palette.prefab
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
