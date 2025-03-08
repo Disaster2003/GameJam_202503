@@ -144,8 +144,12 @@ PrefabInstance:
       value: Obstacles_Normal (3)
       objectReference: {fileID: 0}
     - target: {fileID: 8221261853634628768, guid: 9ad1d066b6986534d903e0ff770ba8b7, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.0284
+      objectReference: {fileID: 0}
+    - target: {fileID: 8221261853634628768, guid: 9ad1d066b6986534d903e0ff770ba8b7, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.04
+      value: 2.0779
       objectReference: {fileID: 0}
     - target: {fileID: 8221261853634628768, guid: 9ad1d066b6986534d903e0ff770ba8b7, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3034,11 +3038,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7727567833306177954, guid: 1c4cb9cb1a724f04cbea2a5c3085c9dd, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.07
+      value: -1.7
       objectReference: {fileID: 0}
     - target: {fileID: 7727567833306177954, guid: 1c4cb9cb1a724f04cbea2a5c3085c9dd, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 51.45
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 7727567833306177954, guid: 1c4cb9cb1a724f04cbea2a5c3085c9dd, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3142,7 +3146,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5.2732096
+  orthographic size: 5.39
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -3186,7 +3190,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 2083901383}
-  cameraSize: 5.39
+  cameraSize: 0.39
 --- !u!1001 &1955703849
 PrefabInstance:
   m_ObjectHideFlags: 0
